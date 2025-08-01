@@ -584,11 +584,115 @@
   }
 }
 
+
+/* ============== 手机响应式 ============== */
+@media (max-width: 768px) {
+  .header-inner {
+    flex-wrap: wrap;
+    padding: 0.6rem 1rem;
+    gap: 0.5rem;
+  }
+
+  /* logo 居左 */
+  .logo {
+    flex-grow: 1;
+    font-size: 1.5rem;
+  }
+
+  /* 折叠菜单按钮 */
+  .main-nav {
+    order: 3;
+    width: 100%;
+    display: none; /* 默认隐藏，点击按钮显示 */
+    background: #fff;
+    box-shadow: 0 2px 10px rgb(127 24 127 / 0.1);
+    border-radius: 0 0 8px 8px;
+    padding: 1rem 0;
+  }
+  .main-nav.open {
+    display: block;
+  }
+  .main-nav ul {
+    flex-direction: column;
+    gap: 1rem;
+    padding-left: 1.5rem;
+  }
+  .main-nav a {
+    font-size: 1.1rem;
+  }
+
+  /* 搜索框改为全宽 */
+  .search-area {
+    order: 2;
+    width: 100%;
+    max-width: 100%;
+  }
+  .search-area input {
+    font-size: 1rem;
+    padding: 0.6rem 3rem 0.6rem 1rem;
+    width: 100%;
+  }
+  .search-btn {
+    right: 12px;
+  }
+
+  /* 操作区域右侧按钮调整顺序 */
+  .action-area {
+    order: 1;
+    display: flex;
+    gap: 0.8rem;
+  }
+  .header-actions {
+    gap: 0.5rem;
+  }
+
+  /* 促销条字体稍微小点，内边距压缩 */
+  .promo-bar {
+    font-size: 0.85rem;
+    padding: 0.6rem 0.8rem;
+  }
+
+  /* 弹窗宽度适应屏幕 */
+  .auth-modal-content {
+    width: 90vw;
+    max-width: 380px;
+    padding: 24px 28px;
+  }
+}
+
+/* 汉堡菜单按钮 */
+.menu-toggle-btn {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.4rem 0.6rem;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+.menu-toggle-btn:hover {
+  background-color: rgba(127, 24, 127, 0.1);
+}
+.menu-toggle-btn svg {
+  fill: #7F187F;
+  width: 24px;
+  height: 24px;
+}
+
+@media (max-width: 768px) {
+  .menu-toggle-btn {
+    display: block;
+    order: 4;
+  }
+}
+
   </style>
 </head>
 <body>
 
 <!-- 促销条 -->
+
+
 
 
 <div class="promo-bar" id="promoBar">
@@ -655,7 +759,9 @@
       登录
     </button>
   </div>
+
 </div> 
+
   </header> 
 
 <!-- 登录/注册弹窗 -->
@@ -692,7 +798,7 @@
       <input type="text" id="partnerName" name="name" placeholder="您的姓名（可选）" />
       <input type="email" id="partnerEmail" name="email" placeholder="请输入您的邮箱" required aria-required="true" />
       <button type="submit">立即行动</button>
-    </form>
+    </form> 
 
     <!-- 新增提示信息区域 -->
     <p id="formMessage" role="alert" aria-live="assertive"></p>
@@ -935,5 +1041,10 @@ partnerForm.addEventListener('submit', async (e) => {
   setInterval(updateGrainState, 50); // 每 50ms 检查一次角度
   </script>  
   
+
+
 </body>
+
+
+
 </html>    
