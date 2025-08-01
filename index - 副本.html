@@ -611,7 +611,6 @@
   <button class="promo-close" id="promoClose" aria-label="关闭促销条">&times;</button>
 </div>
 
-
   <!-- Header -->
   <header class="site-header">
     <div class="header-inner">
@@ -694,14 +693,15 @@
       <input type="text" id="partnerName" name="name" placeholder="您的姓名（可选）" />
       <input type="email" id="partnerEmail" name="email" placeholder="请输入您的邮箱" required aria-required="true" />
       <button type="submit">立即行动</button>
-    </form>
-
-    <!-- 新增提示信息区域 -->
-    <p id="formMessage" role="alert" aria-live="assertive"></p>
+  
+    </p>
   </div>
-</section> 
+</section>
+
+
 <script>
- const authModal = document.getElementById('authModal');
+  
+  const authModal = document.getElementById('authModal');
 const btnSignIn = document.getElementById('btnSignIn');
 const closeAuth = document.getElementById('closeAuth');
 const loginTab = document.getElementById('loginTab');
@@ -838,47 +838,50 @@ authModal.addEventListener('click', (e) => {
   }
 });
 
-const partnerForm = document.getElementById('partnerForm');
-const partnerEmail = document.getElementById('partnerEmail');
-const partnerName = document.getElementById('partnerName');
-const formMessage = document.getElementById('formMessage');
 
-partnerForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  formMessage.textContent = '';
-  formMessage.classList.remove('error');
 
-  const email = partnerEmail.value.trim();
-  const name = partnerName.value.trim();
+  const partnerForm = document.getElementById('partnerForm');
+  const partnerEmail = document.getElementById('partnerEmail');
+  const partnerName = document.getElementById('partnerName');
+  const formMessage = document.getElementById('formMessage');
 
-  if (!email || !email.includes('@')) {
-    formMessage.textContent = '请输入有效的邮箱地址';
-    formMessage.classList.add('error');
-    return;
-  }
+  partnerForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    formMessage.textContent = '';
+    formMessage.classList.remove('error');
 
-  try {
-    const res = await fetch('/.netlify/functions/partner-connect', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, name }),
-    });
+    const email = partnerEmail.value.trim();
+    const name = partnerName.value.trim();
 
-    const data = await res.json();
-    if (res.ok) {
-      formMessage.textContent = '✅ 提交成功！请查收验证邮件，我们会尽快联系您。';
-      partnerForm.reset();
-    } else {
-      formMessage.textContent = data.error || '提交失败，请稍后再试。';
+    if (!email || !email.includes('@')) {
+      formMessage.textContent = '请输入有效的邮箱地址';
       formMessage.classList.add('error');
+      return;
     }
-  } catch (err) {
-    formMessage.textContent = '网络错误，请检查连接后重试。';
-    formMessage.classList.add('error');
-    console.error('[partner-form] error:', err);
-  }
-});
 
+    try {
+      const res = await fetch('/.netlify/functions/partner-connect', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, name }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        formMessage.textContent = '✅ 提交成功！请查收验证邮件，我们会尽快联系您。';
+        partnerForm.reset();
+      } else {
+        formMessage.textContent = data.error || '提交失败，请稍后再试。';
+        formMessage.classList.add('error');
+      }
+    } catch (err) {
+      formMessage.textContent = '网络错误，请检查连接后重试。';
+      formMessage.classList.add('error');
+      console.error('[partner-form] error:', err);
+    }
+  });
+
+  
     (function() {
     const countdownEl = document.getElementById('countdown');
     const promoBar = document.getElementById('promoBar');
@@ -933,7 +936,15 @@ partnerForm.addEventListener('submit', async (e) => {
     });
   }
   setInterval(updateGrainState, 50); // 每 50ms 检查一次角度
-  </script>  
   
+  </script>  
 </body>
+
+
+
+
+
+
+
+
 </html>    
