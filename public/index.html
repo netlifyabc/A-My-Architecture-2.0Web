@@ -1,1364 +1,936 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>寻合作 - 跨境电商</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <!-- 引入 Font Awesome 图标库 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style> 
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>R winSaaS 高阶系统架构</title>
+  <style>
+    /* ======================
+       Reset & Base 样式
+       ====================== */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Lato', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      background: #fafafa;
+      color: #333;
+      line-height: 1.6;
+    }
+    a { text-decoration: none; color: inherit; }
 
+    /* ① 促销条 */
+    .promo-bar {
+      background-color: #7F187F;
+      color: #fff;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      padding: 1rem;
+      font-size: 1rem;
+      font-weight: 600;
+      z-index: 1001;
+    }
+    .promo-bar .promo-text {
+      margin-right: 0.6rem;
+    }
+    .promo-bar .countdown {
+      background: #F8CF1C;
+      color: #222;
+      padding: 0.3rem 0.7rem;
+      border-radius: 4px;
+      font-weight: bold;
+      margin-right: 0.8rem;
+      font-variant-numeric: tabular-nums;
+    }
+    .promo-bar .promo-close {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
 
-/* ===========================
-   全局基础样式
-   =========================== */
-body {
-    font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg, #6D83F2, #3C5A9A);
-    margin: 0;
-    padding: 0;
-    line-height: 1.6;
-    color: #333;
+    /* ② Header */
+    .site-header {
+      background: #fff;
+      box-shadow: 0 2px 10px rgb(127 24 127 / 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      padding: 0.8rem 2rem;
+      gap: 2rem;
+    }
+    .logo {
+      font-weight: 700;
+      font-size: 1.9rem;
+      color: #7F187F;
+      letter-spacing: 1px;
+      flex-shrink: 0;
+      cursor: pointer;
+      transition: color 0.3s ease;
+    }
+    .logo:hover {
+      color: #a53dbf;
+    }
+    .main-nav ul {
+      list-style: none;
+      display: flex;
+      gap: 2.5rem;
+      padding: 0;
+      margin: 0;
+    }
+    .main-nav a {
+      text-decoration: none;
+      color: #333;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: color 0.25s ease;
+      padding: 0.25rem 0;
+      border-bottom: 2px solid transparent;
+    }
+    .main-nav a:hover,
+    .main-nav a:focus {
+      color: #7F187F;
+      border-bottom-color: #7F187F;
+    }
+    .search-area {
+      position: relative;
+      flex-grow: 1;
+      max-width: 420px;
+    }
+    .search-area input {
+      width: 100%;
+      padding: 0.6rem 3rem 0.6rem 1rem;
+      font-size: 1rem;
+      border: 1.5px solid #ddd;
+      border-radius: 24px;
+      transition: border-color 0.3s ease;
+    }
+    .search-area input:focus {
+      outline: none;
+      border-color: #7F187F;
+      box-shadow: 0 0 8px rgb(127 24 127 / 0.3);
+    }
+    .search-btn {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      user-select: none;
+    }
+    .action-icons {
+      display: flex;
+      gap: 1rem;
+    }
+    .btn-signin {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      font-size: 0.95rem;
+      color: #7F187F;
+      background-color: transparent;
+      border-radius: 4px;
+      font-weight: 600;
+      transition: color 0.2s ease, background-color 0.2s ease;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-signin svg {
+      fill: #7F187F;
+    }
+    .btn-signin:hover {
+      background-color: rgba(127, 24, 127, 0.05);
+      color: #5a115a;
+    }
+    .btn-signin:hover svg {
+      fill: #5a115a;
+    }
+   /* 弹窗遮罩层 */
+.auth-modal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  inset: 0;
+  background-color: rgba(0,0,0,0.7);
+  backdrop-filter: blur(5px);
+  align-items: center;
+  justify-content: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow-y: auto;
+  padding: 1rem;
+  transition: background-color 0.3s ease;
 }
 
-/* ===========================
-   ① Header 个人信息区域
-   =========================== */
-header {
-    display: flex;
-    align-items: center; /* 垂直居中 */
-    justify-content: center;
-    gap: 20px; /* 图片与名字间距 */
+/* 显示弹窗 */
+.auth-modal.show {
+  display: flex;
 }
 
-.profile {
-    display: flex;
-    align-items: center; /* 水平对齐图片和名字 */
+/* 弹窗内容容器 */
+.auth-modal-content {
+  background-color: #fff;
+  margin: auto;
+  padding: 36px 40px;
+  border-radius: 14px;
+  width: 380px;
+  max-width: 100%;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+  position: relative;
+  box-sizing: border-box;
+  transform-origin: center;
+  animation: modalFadeInScale 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+  border: 2px solid transparent;  /* 默认无边框 */
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.profile-image {
-    width: 100px; /* 图片尺寸 */
-    height: 100px;
-    margin-right: 50px; /* 图片与姓名间距 */
-    border-radius: 15px; /* 圆角 */
-    object-fit: cover; /* 保持比例裁剪 */
+.auth-modal-content:focus {
+  outline: none;
+  border-color: #bfa76a;  /* 聚焦时暗金边框 */
+  box-shadow: 0 0 12px rgba(191, 167, 106, 0.6);
+}
+/* 弹窗入场动画 */
+@keyframes modalFadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
-/* ===========================
-   ② 页面整体容器
-   =========================== */
-.container {
-    width: 90%;
-    margin: 50px auto;
-    max-width: 1200px;
-    background: #ffffff;
-    padding: 40px;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
+/* 关闭按钮 */
+#closeAuth {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background-color: rgba(26, 26, 26, 0.15); /* 低调黑色背景 */
+  color: #bfa76a; /* 高级暗金 */
+  font-size: 22px;
+  line-height: 34px;
+  text-align: center;
+  cursor: pointer;
+  border: none;
+  user-select: none;
+  transition: background-color 0.25s ease, color 0.25s ease, transform 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 8px rgba(191, 167, 106, 0.4); /* 金色阴影 */
+}
+#closeAuth:hover,
+#closeAuth:focus {
+  background-color: #1a1a1a; /* 深黑背景 */
+  color: #fff8dc; /* 柔和金白色 */
+  outline: none;
+  box-shadow: 0 0 16px rgba(191, 167, 106, 0.8);
+  transform: scale(1.1);
 }
 
-/* ===========================
-   ③ 标题样式
-   =========================== */
-h1, h2 {
-    font-weight: 600;
-    color: #2c3e50;
-    text-align: center;
-    margin-bottom: 15px;
-    text-transform: capitalize;
+/* 登录注册切换标签 */
+.auth-tabs {
+  text-align: center;
+  margin-bottom: 2.4rem;
+  user-select: none;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
 }
 
-h1 {
-    font-size: 36px;
-    color: #3498db;
+/* 标签按钮 */
+.auth-tabs button {
+  padding: 0.85rem 2.4rem;
+  border: none;
+  border-radius: 8px 8px 0 0;
+  background: transparent;
+  cursor: pointer;
+  font-weight: 700;
+  color: #555;
+  font-size: 1.15rem;
+  transition: color 0.35s ease, background 0.35s ease, box-shadow 0.35s ease;
+  user-select: none;
+  box-shadow: inset 0 0 0 transparent;
+  letter-spacing: 0.04em;
+}
+.auth-tabs button.active {
+  color: #1a1a1a; /* 近黑 */
+  background: linear-gradient(135deg, #f5f1e7, #bfa76a); /* 淡米色到暗金渐变 */
+  box-shadow: inset 0 -6px 12px rgba(191, 167, 106, 0.15);
+  font-weight: 800;
+  text-shadow: 0 0 4px rgba(191, 167, 106, 0.35);
+  outline-offset: 4px;
+}
+.auth-tabs button:focus {
+  outline: 3px solid #bfa76a; /* 金色描边 */
+  outline-offset: 3px;
 }
 
-h2 {
-    font-size: 28px;
-    margin-bottom: 20px;
+/* 表单控制 */
+#loginForm,
+#registerForm {
+  transition: opacity 0.3s ease;
 }
 
-/* ===========================
-   ⑤ 个人联系信息
-   =========================== */
-.contact-info {
-    font-size: 18px;
-    color: #555;
-    margin-bottom: 30px;
-    text-align: center;
-    font-weight: 400;
-}
-
-.contact-info p {
-    margin-top: 60px;
-}
-
-.contact-info a {
-    color: #3498db;
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-
-.contact-info a:hover {
-    color: #1abc9c;
-}
-
-/* ===========================
-   ⑥ 节标题样式
-   =========================== */
-.section-title {
-    font-size: 24px;
-    font-weight: 600;
-    color: #3498db;
-    margin-top: 30px;
-    margin-bottom: 15px;
-    border-bottom: 2px solid #3498db;
-    padding-bottom: 5px;
-    position: relative;
-    text-align: center;
-}
-
-/* ===========================
-   ⑦ 列表样式
-   =========================== */
-.list {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-
-.list li {
-    margin: 12px 0;
-    padding: 10px;
-    border-left: 4px solid #3498db;
-    padding-left: 15px;
-    background-color: #f9fafb;
-    transition: transform 0.3s ease, background-color 0.3s ease;
-}
-
-.list li:hover {
-    transform: translateX(10px);
-    background-color: #eaf2f8;
-}
-
-/* ===========================
-   ⑧ ChatGPT 聊天模块样式
-   =========================== */
-.chatgpt-box {
-    margin: 0 auto;
-    background: #fff;
-    border: 1.5px solid #ddd;
-    border-radius: 12px;
-    padding: 24px 28px;
-    font-family: "PingFang SC", "Helvetica Neue", Helvetica, Arial, sans-serif;
-    color: #333;
-    box-shadow: 0 4px 12px rgb(0 0 0 / 0.08);
-}
-
-.chatgpt-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 20px;
-    color: #555;
-    font-weight: 600;
-    font-size: 18px;
-}
-
-.chatgpt-content h3 {
-    font-weight: 700;
-    color: #333;
-    margin-top: 20px;
-    margin-bottom: 12px;
-    font-size: 16.5px;
-}
-
-.chatgpt-content ul {
-    list-style: none;
-    padding-left: 0;
-    margin-bottom: 20px;
-}
-
-.chatgpt-content ul li {
-    padding-left: 24px;
-    position: relative;
-    line-height: 1.5;
-    font-size: 14.8px;
-    color: #444;
-}
-
-.chatgpt-content ul li::before {
-    content: "•";
-    position: absolute;
-    left: 0;
-    color: #40a9ff;
-    font-weight: bold;
-}
-
-.highlight {
-    background: #e6f7ff;
-    border-left: 4px solid #1890ff;
-    padding: 12px 16px;
-    border-radius: 6px;
-    font-size: 14.6px;
-    color: #0c3a6e;
-    margin-bottom: 20px;
-    line-height: 1.6;
-}
-
-.tagline {
-    font-weight: 600;
-    font-size: 14.8px;
-    color: #333;
-    background: #f7faff;
-    padding: 14px 18px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    white-space: pre-wrap;
-    line-height: 1.5;
-}
-
-.ability-structure {
-    background: #f0f4f8;
-    border-radius: 8px;
-    padding: 16px 18px;
-    font-family: Menlo, Consolas, monospace;
-    font-size: 14px;
-    line-height: 1.65;
-    color: #1a1a1a;
-    white-space: pre-wrap;
-    margin-top: 0;
-    margin-bottom: 12px;
-    border: 1px dashed #b0bec5;
-}
-
-/* ===========================
-   ⑨ 图片横向展示区域
-   =========================== */
-.images-section {
-    margin-top: 40px;
-    text-align: center;
-}
-
-.images-container {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-}
-
-.image {
-    width: 100%;
-    max-width: 500px;
-    height: auto;
-    border-radius: 10px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.image:hover {
-    transform: scale(1.05);
-    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.2);
-}
-
-/* 第三张图片加宽 */
-.image-wide {
-    max-width: 800px;
-}
-
-/* 插图小图标样式 */
-.product-icon {
-    width: 50px;
-    height: 50px;
-    margin: 10px 0;
-}
-
-.product-category {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-/* ===========================
-   ⑩ 大图展示区
-   =========================== */
-.image-showcase {
-    max-width: 100%;
-    margin: 60px auto;
-    text-align: center;
-    font-family: 'Segoe UI', sans-serif;
-    padding: 0 20px;
-}
-
-.image-title {
-    font-size: 20px;
-    font-weight: 600;
-    margin-bottom: 20px;
-    color: #333;
-}
-
-.image-container, .image-container2 {
-    max-width: 1500px;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
-    background-color: #f9f9f9;
-    position: relative;
-}
-
-.image-container {
-    aspect-ratio: 5 / 2;
-}
-
-.image-container2 {
-    aspect-ratio: 25 / 12;
-}
-
-.image-container img,
-.image-container2 img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-}
-
-/* ===========================
-   ⑪ 能力表格样式（优化宽度 & 紧凑高度）
-   =========================== */
-
-   .capability-table {
-  width: 90%;                    /* 增加宽度 */
-  max-width: 1200px;             /* 限制最大宽度 */
-  margin: 1em auto;              /* 居中且上下间距 */
-  border-collapse: collapse;    /* 保持原有折叠边框 */
-  background: #ffffff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 15px;
+/* 隐藏表单用透明度和不可见 */
+#loginForm:not(.active),
+#registerForm:not(.active) {
+  opacity: 0;
+  height: 0;
   overflow: hidden;
+  pointer-events: none;
+  position: absolute;
 }
 
-.capability-table th,
-.capability-table td {
-  padding: 8px 12px;             /* 减小内边距，控制行高 */
-  border-bottom: 1px solid #eaeaea;
-  text-align: left;
-  vertical-align: top;
-  line-height: 1.3;              /* 控制行高 */
+/* 输入框样式 */
+.auth-modal-content input {
+  width: 100%;
+  padding: 14px 16px;
+  margin: 14px 0;
+  box-sizing: border-box;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  font-weight: 500;
+  outline-offset: 2px;
+}
+.auth-modal-content input:focus {
+  outline: none;
+  border-color: #bfa76a;  /* 聚焦时暗金边框 */
+  box-shadow: 0 0 12px rgba(191, 167, 106, 0.6);
 }
 
-.capability-table th {
-  background-color: #f5f5f5;
-  font-weight: 600;
-  color: #333;
+.auth-modal-content button {
+  width: 100%;
+  padding: 16px 0;
+  background-color: #223355; /* 深蓝色，低调又有质感 */
+  color: #d4bfa3; /* 柔和香槟金 */
+  border: 1.5px solid #d4bfa3;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 1.15rem;
+  box-shadow: 0 2px 8px rgba(34, 51, 85, 0.4);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  user-select: none;
+  letter-spacing: 0.03em;
 }
 
-.capability-table tr:last-child td {
-  border-bottom: none;
+.auth-modal-content button:hover:not(:disabled) {
+  background-color: #2c3a70; /* 稍亮深蓝 */
+  color: #f0e6d2; /* 更亮香槟金 */
+  box-shadow: 0 4px 14px rgba(44, 58, 112, 0.5);
+  transform: none;
 }
 
-.potential-valuation {
-  /* 原有样式继续写在这里 */
-  vertical-align: middle;
-}
-
-/* ===========================
-   ⑫ 通用表格样式
-   =========================== */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 24px 0;
-}
-
-table, th, td {
-    border: 1px solid #ccc;
-}
-
-td, th {
-    padding: 10px 14px;
-    text-align: left;
-}
-
-/* 表格重点样式 */
-.highlight {
-    font-weight: bold;
-    color: #005a9c;
-}
-
-/* 段落/版块间距 */
-.section {
-    margin-top: 40px;
-}
-
-.value-summary {
-    font-size: 1.2em;
-    margin-top: 10px;
-}
-
-/* 估值高端样式 */
-.potential-valuation {
-    font-weight: bold;
-    color: #ffffff;
-    font-size: 1.2em;
-    padding: 8px 15px;
-    background: linear-gradient(135deg, #3498db, #9b59b6);
-    border-radius: 8px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    transition: all 0.3s ease;
-}
-
-.potential-valuation:hover {
-    background: linear-gradient(135deg, #2ecc71, #f39c12);
-    transform: scale(1.05);
-}
-
-/* ===========================
-   ⑬ 关于我区域
-   =========================== */
-.about-me {
-    max-width: 720px;
-    margin: 40px auto;
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    color: #222;
-    line-height: 1.6;
-}
-
-.about-me h2 {
-    font-weight: 700;
-    font-size: 1.8rem;
-    margin-bottom: 20px;
-    color: #2563eb;
-}
-
-.about-me .highlight {
-    background: #f0f9ff;
-    padding: 12px 20px;
-    font-style: normal;
-    font-weight: 600;
-    margin-bottom: 25px;
-    color: #1e40af;
-    font-size: 1.1rem;
-    border-radius: 6px;
-}
-
-.about-me code {
-    background: #e0f2fe;
-    color: #0369a1;
-    padding: 2px 6px;
-    border-radius: 3px;
-    font-family: "Source Code Pro", monospace;
-}
-
-.about-me ul.key-points {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.about-me ul.key-points li {
-    margin-bottom: 15px;
-    font-size: 1rem;
-}
-
-.about-me ul.key-points strong {
-    color: #1e40af;
-}
-
-/* 性能摘要 */
-.performance-summary {
-    background-color: #f5f5f5;
-    padding: 10px;
-    margin-top: 15px;
-    font-size: 1em;
-}
-
-/* 高亮字体 */
-.highlight {
-    font-weight: bold;
-}
-
-.highlight-red {
-    color: #E74C3C;
-}
-
-/* ===========================
-   ⑭ 系统提示框样式
-   =========================== */
-.system-note {
-    border-left: 4px solid #3498db;
-    padding: 10px 16px;
-    margin: 20px 0;
-    font-size: 0.95em;
-    line-height: 1.5;
-    background-color: #fafafa;
-    color: #2c2c2c;
-}
-
-.system-note code {
-    background: none;
-    color: #333;
-    font-weight: bold;
-}
-
-.system-note p {
-    margin: 6px 0;
-    
-}
-
-/* ======================
-   ③ 移动端响应式样式（max-width: 768px）
-   ====================== */
-
-/* 整体字体及容器调整 */
-@media (max-width: 768px) {
-  body {
-    font-size: 90%;
-  }
-  .container {
-    padding: 20px;
-  }
-  h1 {
-    font-size: 28px;
-  }
-}
-
-/* 个人信息区间距调整 */
-@media (max-width: 768px) {
-  .profile {
-    margin-top: 20px;
-    margin-bottom: 20px;
-  }
-}
-
-/* 个人信息区标题字体大小调整 */
-@media (max-width: 768px) {
-  .profile h1 {
-    font-size: 26px;
-  }
-}
-
-/* 能力表格在移动端的适配 */
-@media (max-width: 768px) {
-  .capability-table {
-    width: 100% !important;
-    font-size: 14px;
-    margin: 12px 0;
-    border-spacing: 0;
-  }
-
-  .capability-table th,
-  .capability-table td {
-    padding: 10px 12px;
-    word-break: break-word; /* 防止长词撑破表格 */
-  }
-
-  .capability-table th {
-    font-size: 15px;
-  }
-}
-
-/* 隐藏特定元素（用于小屏幕） */
-@media (max-width: 768px) {
-  .mobile-hide-on-small {
-    display: none !important;
-  }
+.auth-modal-content button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  background: #777;
+  border-color: #666;
+  color: #bbb;
+  box-shadow: none;
 }
 
 
-/* ======================
-   ④ 打印样式 @media print
-   ====================== */
+/* 弹窗聚焦时移除默认outline */
+.auth-modal-content:focus {
+  outline: none;
+}
 
-/* 基础打印样式设置 */
-@media print {
-  body, .container {
-    background-color: white !important;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-    margin: 0;
-    padding: 0;
-    font-size: 11px !important;
+/* 表单显示控制 */
+#loginForm {
+  display: none;
+}
+#loginForm.active {
+  display: block;
+}
+#registerForm {
+  display: none;
+}
+#registerForm.active {
+  display: block;
+}
+
+    /* 统一风格小按钮 */
+    .btn-inline {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 10px;
+      font-size: 0.9rem;
+      color: #7F187F;
+      background-color: transparent;
+      border: none;
+      border-radius: 4px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background-color 0.2s ease;
+    }
+    .btn-inline:hover {
+      background-color: rgba(127, 24, 127, 0.1);
+    }
+
+    /* 简易图标按钮 */
+    .icon-btn {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 50%;
+      transition: background-color 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .icon-btn:hover {
+      background-color: rgba(127, 24, 127, 0.15);
+    }
+    .icon-btn svg {
+      fill: #7F187F;
+      width: 20px;
+      height: 20px;
+    }
+
+    /* 轮廓按钮 - 主要按钮 */
+    .btn-outline-primary {
+      color: #7F187F;
+      border: 2px solid #7F187F;
+      padding: 8px 16px;
+      font-weight: 700;
+      border-radius: 6px;
+      background-color: transparent;
+      cursor: pointer;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    .btn-outline-primary:hover {
+      background-color: #7F187F;
+      color: white;
+    }
+
+
+    .partner-connect-section {
+  background-color: #fff8fc;
+  padding: 60px 20px;
+  text-align: center;
+  border-top: 1px solid #eee;
+}
+.partner-connect-container {
+  max-width: 480px;
+  margin: 0 auto;
+}
+.partner-connect-section h2 {
+  font-size: 1.8rem;
+  color: #7F187F;
+  margin-bottom: 1rem;
+}
+.partner-connect-section .desc {
+  color: #555;
+  margin-bottom: 1.6rem;
+}
+#partnerForm input {
+  width: 100%;
+  padding: 14px;
+  margin-bottom: 12px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+#partnerForm button {
+  width: 100%;
+  padding: 14px;
+  font-size: 1.1rem;
+  background-color: #7F187F;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+#partnerForm button:hover {
+  background-color: #a23ba2;
+}
+.form-message {
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  color: #7F187F;
+}
+.form-message.error {
+  color: #c00;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* 控制图标间距，可调 */
+}
+
+.promo-text .highlight {
+  font-size: 1.3em;
+  font-weight: 700;
+  margin-right: 0.2em; /* 给后面空白一点间距 */
+} 
+
+/* ② 新沙漏动画优化样式，用独立类名 */
+.hourglass-optimized {
+  width: 30px;   /* 原来是 50px */
+  height: 42px;  /* 原来是 70px */
+  position: relative;
+  animation: flipHourglass 5s ease-in-out infinite;
+  transform-origin: center center;
+  margin-left: 0.4rem; /* 可选，让沙漏与倒计时之间更平衡 */
+}
+
+@keyframes flipHourglass {
+  0%, 100% {
+    transform: rotate(0deg);
   }
-
-  .chatgpt-box {
-    transform: none !important;   /* 取消 translateX */
-    margin-left: auto !important;
-    margin-right: auto !important;
-  }
-
-  .images-section {
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
-  }
-
-  /* A4纸大小及边距设置 */
-  @page {
-    size: A4;
-    margin: 6mm; /* 缩小边距 */
-    transform-origin: top; /* 确保从顶部开始缩放 */
-  }
-
-  /* 页脚避免分页 */
-  footer {
-    page-break-inside: avoid !important;
-    page-break-before: avoid !important;
-    page-break-after: auto;
-  }
-
-  /* 字体大小调整 */
-  body, .container {
-    font-size: 12px !important; /* 增大字体以便打印 */
-    margin: 0;
-    padding: 0;
-    background-color: #fff !important;
-  }
-
-  /* 头部区域 */
-  header {
-    padding: 10px 0 !important;
-  }
-
-  header h1 {
-    font-size: 24pt !important; /* 统一标题字体大小 */
-    text-align: center;
-  }
-
-  /* 内容区域调整 */
-  .content {
-    margin: 10px auto;
-    padding: 10px;
-    box-shadow: none;
-  }
-
-  /* 表格调整 */
-  table {
-    width: 100% !important;
-    margin: 20px 0;
-    border-collapse: collapse;
-  }
-
-  table th, td {
-    padding: 10px;
-    text-align: left;
-    border: 1px solid #ddd;
-    font-size: 10pt !important; /* 打印时字体更小 */
-  }
-
-  table th {
-    background-color: #3498db;
-    color: #fff;
-  }
-
-  /* 内容区间距 */
-  section {
-    margin-bottom: 20px !important;
-  }
-
-  /* 标题字体调整 */
-  h2 {
-    font-size: 16pt !important;
-    color: #3498db !important;
-  }
-
-  h3 {
-    font-size: 14pt !important;
-    color: #2c3e50 !important;
-  }
-
-  p {
-    font-size: 10pt !important;
-    margin: 10px 0;
+  50% {
+    transform: rotate(180deg);
   }
 }
 
-/* 打印时页面及容器基本样式调整 */
-@media print {
-  body {
-    background-color: #fff; /* 打印时背景为白色 */
-    margin: 0;
-    padding: 0;
-    transform: translateX(-5px);
-  }
+.hourglass-optimized svg {
+  width: 100%;
+  height: 100%;
+}
 
-  header {
-    padding: 10px 0;
-    border-bottom: 2px solid #2980b9;
-    box-shadow: none;
-  }
+.hourglass-optimized .hourglass-outline {
+  stroke: #F8CF1C;
+  stroke-width: 2;
+  fill: none;
+}
 
-  header h1 {
-    font-size: 1.5rem; /* 打印时字体更小 */
-  }
+.hourglass-optimized .grain {
+  fill: #F8CF1C;
+  opacity: 0.9;
+  animation-name: fall, sway;
+  animation-timing-function: linear, ease-in-out;
+  animation-iteration-count: infinite, infinite;
+  animation-direction: normal, alternate;
+  animation-fill-mode: forwards;
+  transform-origin: center;
+}
 
-  .container {
-    width: 100%;
-    margin: 0;
-    padding: 20px;
-    box-shadow: none;
-    border-radius: 0;
-  }
+/* 每个沙粒独立动画参数（已调整尺寸和位置） */
+.hourglass-optimized .grain:nth-child(1) {
+  animation-duration: 5s, 1.2s;
+  animation-delay: 0s, 0s;
+  r: 1.4;
+  cx: 17;
+}
+.hourglass-optimized .grain:nth-child(2) {
+  animation-duration: 4.8s, 1.3s;
+  animation-delay: 0.8s, 0.2s;
+  r: 1.2;
+  cx: 21;
+}
+.hourglass-optimized .grain:nth-child(3) {
+  animation-duration: 5.2s, 1.1s;
+  animation-delay: 1.5s, 0.5s;
+  r: 1.3;
+  cx: 19;
+}
+.hourglass-optimized .grain:nth-child(4) {
+  animation-duration: 5s, 1.4s;
+  animation-delay: 2.2s, 0.8s;
+  r: 1.1;
+  cx: 22;
+}
+.hourglass-optimized .grain:nth-child(5) {
+  animation-duration: 5.1s, 1.3s;
+  animation-delay: 3s, 0.4s;
+  r: 1.3;
+  cx: 20;
+}
 
-  .section-title {
-    font-size: 1.2rem; /* 打印时字体大小适当缩小 */
-    margin-top: 20px;
+@keyframes fall {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
-
-  .cta-button {
-    display: none; /* 打印时隐藏按钮 */
+  80% {
+    opacity: 1;
+    transform: translateY(14px) scale(1);
   }
-
-  img {
-    max-width: 100%;
-    height: auto;
-    margin-top: 20px;
-    margin-bottom: 20px;
-  }
-
-  .image-container {
-    margin: 10px 0; /* 调整图片间距 */
-  }
-
-  /* 图片部分分页控制 */
-  .images-section {
-    page-break-before: always; /* 确保图片部分在新的一页上 */
-  }
-
-  .image {
-    width: 50%; /* 调整图片宽度 */
-    max-width: 680px; /* 保证不会超过A4纸宽度 */
-  }
-
-  /* 确保图片不会被拆分 */
-  .images-container img {
-    page-break-inside: avoid;
-    max-width: 880px; /* 保证不会超过A4纸宽度 */
+  100% {
+    opacity: 0;
+    transform: translateY(18px) scale(0.6);
   }
 }
 
-/* 打印时图片展示区域适配 */
-@media print {
-  body {
-    margin: 0;
-    padding: 0;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-    font-size: 12px;
+@keyframes sway {
+  0% {
+    transform: translateX(0);
   }
-
-  .image-showcase {
-    page-break-inside: avoid;
-    margin: 20px 0;
-    padding: 0;
-  }
-
-  .image-container,
-  .image-container2 {
-    max-width: 100%;
-    aspect-ratio: auto;
-    border-radius: 0;
-    box-shadow: none;
-    background: none;
-    margin: 10px 0;
-    page-break-inside: avoid;
-  }
-
-  .image-container img,
-  .image-container2 img {
-    width: 100%;
-    height: auto;
-    object-fit: contain;
-  }
-
-  .capability-table {
-    width: 100% !important;
-    box-shadow: none;
-    page-break-inside: avoid;
-    font-size: 12px;
-    margin: 10px 0;
-  }
-
-  .capability-table th,
-  .capability-table td {
-    padding: 6px 10px;
-  }
-
-  .product-category {
-    page-break-inside: avoid;
-    margin-bottom: 10px;
-  }
-
-  .product-icon {
-    width: 30px;
-    height: 30px;
-  }
-
-  h1, h2, h3, h4 {
-    page-break-after: avoid;
-    break-after: avoid;
+  100% {
+    transform: translateX(2px);
   }
 }
 
-/* 打印时增长表格样式调整 */
-@media print {
-  .growth-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 12px;
-    margin: 12px 0;
-    page-break-inside: avoid;
-  }
-
-  .growth-table th,
-  .growth-table td {
-    padding: 6px 10px;
-    text-align: left;
-    border: 1px solid #ccc;
-    vertical-align: top;
-  }
-
-  .growth-table th {
-    background-color: #f2f2f2;
-    font-weight: 600;
-  }
-
-  h2, h3 {
-    page-break-after: avoid;
-    break-after: avoid;
-  }
-}
-
-/* 打印时页脚固定及位置调整 */
-@media print {
-  body {
-    position: relative;
-    min-height: 100vh;
-    margin: 0;
-    padding-bottom: 100px; /* 留出空间给页脚 */
-  }
-
-  .footer {
-    position: fixed;
-    bottom: 0;
-    left: -100px; /* 向左偏移 100px */
-    right: 0;
-    text-align: center;
-    font-size: 12px;
-    padding: 8px 0;
-    background: white;
-    color: #555;
-    border: none; /* 去掉横线 */
-    page-break-after: avoid;
-  }
-}
-
-    </style>
+  </style>
 </head>
 <body>
 
-<div class="container">
-    <!-- 个人信息 -->
-    <header>
-        <div class="profile">
-            <img src="images/Master.png" alt="个人图片" class="profile-image">
-            <h1>张宁 Janney</h1>
-        </div>
-        <div class="contact-info mobile-hide-on-small">
-
-        </div>
-    </header> 
+<!-- 促销条 -->
 
 
-    <!-- 🧬 定位元语 -->
-    <section class="about-me" style="margin-top: 40px;">
-      <h2> 🧑‍💼 我是 “谁” ？</h2>
+<div class="promo-bar" id="promoBar">
+<span class="promo-text">
+  🚀 <span class="highlight">数字化升级</span>合作倒计时开启，抢先一步领先市场！今日时间仅剩
+</span> 
+  <span class="countdown" id="countdown">23:59:59</span>
+  <span class="hourglass-optimized" aria-hidden="true" title="倒计时沙漏">
+    <svg viewBox="0 0 40 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+      <!-- 沙漏外框 -->
+      <path class="hourglass-outline" d="M10 5 L30 5 L10 55 L30 55 Z M10 5 L30 55 M30 5 L10 55" />
+      <!-- 沙粒 -->
+      <circle class="grain" cx="18" cy="15" r="2.2" />
+      <circle class="grain" cx="21" cy="15" r="1.8" />
+      <circle class="grain" cx="19" cy="15" r="2" />
+      <circle class="grain" cx="22" cy="15" r="1.6" />
+      <circle class="grain" cx="20" cy="15" r="2.1" />
+    </svg>
+  </span>
+  <button class="promo-close" id="promoClose" aria-label="关闭促销条">&times;</button>
+</div>
 
-<section>
-  <h3>⚖️ 记住：我们是合作伙伴，而非甲、乙关系</h3>
-  <p style="font-size: 15px; line-height: 1.8; color: #0f172a;">
-    请<strong>放下“甲方思维”局限</strong>对人以评判与控制意识驱动，<strong>评估 基于：我们是认知对等、价值互补的合作关系</strong>。<br>
-    凭借技术 × 商业系统的复合能力，我早已<strong>不是</strong>依附于某个项目执行层的<strong>“技术工具”或“薪资齿轮”</strong>，<br>
-    而是能搭建完整系统、驱动商业增长的 <strong>系统架构师 / 合作级人才</strong>。<br>
-  </p>
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo" tabindex="0" role="link" aria-label="Wayfair 首页">R winSaaS</div>
+      <nav class="main-nav" role="navigation" aria-label="主导航">
+        <ul>
+          <li><a href="#">首页</a></li>
+          <li><a href="#">解决方案</a></li> 
 
+          <li><a href="#">案例展示</a></li>
+          <li><a href="#">联系我们</a></li> 
+        </ul>
+      </nav>
+      <div class="search-area">
+        <input type="search" placeholder="搜索产品" aria-label="搜索产品" />
+        <button class="search-btn" aria-label="搜索">
+          🔍
+        </button>
+      </div>
 
-<blockquote>
-  <p>「我是结构驱动者，而非命令执行者；不解决表面问题，专注突破系统瓶颈。」</p>
-  <p>「非齿轮型角色，拒绝被动支配，而是<strong>构建技术与商业复利闭环的意识载体</strong>。」</p> 
-  <p><span class="checkmark">✅</span>我不是“按图施工”的人，而是绘制蓝图的人。</p> 
-</blockquote>
+<!-- 操作区域 -->
+<div class="action-area">
 
-<style>
-  .checkmark {
-    margin-right: 8px;
-    display: inline-block;
-  }
-</style>
+  <div class="header-actions">
+    <!-- 购物车 -->
+    <button class="icon-btn" aria-label="购物车">
+      <svg class="action-icons" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+        <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10
+        0c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2zM7.16 14h9.84c.75
+        0 1.41-.41 1.75-1.03l3.58-6.49A1.003 1.003 0 0021.5 5H5.21l-.94-2H1v2h2l3.6
+        7.59-1.35 2.45C4.52 15.37 5.48 17 7 17h12v-2H7.42c-.14
+        0-.25-.11-.25-.25l.03-.12L7.16 14z"/>
+      </svg>
+    </button>
 
+    <!-- 登录 -->
+    <button class="btn-signin" id="btnSignIn" aria-haspopup="dialog" aria-controls="authModal" aria-expanded="false">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22.5" height="22.5" aria-hidden="true">
+        <path d="M12 12c2.67 0 8 1.34 8 4v4H4v-4c0-2.66 5.33-4 8-4zM12
+        2a4 4 0 100 8 4 4 0 000-8z"/>
+      </svg>
+      登录
+    </button>
+  </div>
 
-    </section> 
-    
-    <!-- 🧠 身份识别 -->
-    <section class="about-me" style="margin-top: 40px;">
-      <h2>🧠 一、身份识别：<strong>系统架构师 ≠ 技术开发者</strong></h2>
-      <p>我是一个<strong>“语言即系统”能力拥有者</strong>，兼具商业场景穿透与架构抽象转译力， 不属于「被动执行」「技术齿轮」「模块堆叠」的线性角色， 而属于少数具备<strong>意识层级跃迁 + 系统构造语言</strong>的复合型稀缺人才。</p>
-      <blockquote>
-        <p>在中国当下独立站技术领域内，我属于少数进入「L4-L5 架构意识」的人才， 同时构建「系统复制性 + AI驱动 + 业务闭环」三重能力结构， 不服务于“短期ROI”导向，而<strong>构建指数复利曲线的系统骨架</strong>。</p>
-      </blockquote>
-    </section>
+</div> 
+  </header> 
 
-<!-- ⚙️ 系统能力结构 -->
-<section class="about-me" style="margin-top: 40px;">
-  <h2>⚙️ 二、系统能力结构（非技能列表，而是结构位面）</h2>
-  <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
-    <thead>
-      <tr style="background-color: #e0e7ff;">
-        <th style="padding: 8px; border: 1px solid #ccc;">维度</th>
-        <th style="padding: 8px; border: 1px solid #ccc;">能力结构</th>
-        <th style="padding: 8px; border: 1px solid #ccc;">行业占比</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td style="padding: 8px; border: 1px solid #ccc;">🧠 <strong>系统语言抽象力</strong></td>
-        <td style="padding: 8px; border: 1px solid #ccc;">将复杂商业目标 → 拆解为系统语言结构，完成架构建模与复用逻辑</td>
-        <td style="padding: 8px; border: 1px solid #ccc;">约 0.5% 以下</td>
-      </tr>
-      <tr>
-        <td style="padding: 8px; border: 1px solid #ccc;">🧩 <strong>模块级系统复制</strong></td>
-        <td style="padding: 8px; border: 1px solid #ccc;">Shopify + Serverless 多站点系统，具备快速复制 + 自动部署 + 多语言多币种支持</td>
-        <td style="padding: 8px; border: 1px solid #ccc;">低于 1%</td>
-      </tr>
-      <tr>
-        <td style="padding: 8px; border: 1px solid #ccc;">🤖 <strong>AI嵌套式系统建模</strong></td>
-        <td style="padding: 8px; border: 1px solid #ccc;">非 prompt 使用者，而是 GPT 嵌入型业务系统架构者（文案/SEO/邮件/客服系统级自动化）</td>
-        <td style="padding: 8px; border: 1px solid #ccc;">极少数</td>
-      </tr>
-      <tr>
-        <td style="padding: 8px; border: 1px solid #ccc;">🔁 <strong>商业闭环设计力</strong></td>
-        <td style="padding: 8px; border: 1px solid #ccc;">从询盘→报价→履约→复购形成系统性 flywheel，而非单点解决方案</td>
-        <td style="padding: 8px; border: 1px solid #ccc;">约 1–2%</td>
-      </tr>
-      <tr>
-        <td style="padding: 8px; border: 1px solid #ccc;">📈 <strong>复利型资产认知</strong></td>
-        <td style="padding: 8px; border: 1px solid #ccc;">每个子站点不是产品页面，而是结构性数字资产，具备估值能力</td>
-        <td style="padding: 8px; border: 1px solid #ccc;">极小众</td>
-      </tr>
-    </tbody>
-  </table>
-</section>
+<!-- 登录/注册弹窗 -->
+<div class="auth-modal" id="authModal" role="dialog" aria-modal="true" aria-labelledby="authTitle" tabindex="-1" aria-hidden="true">
+  <div class="auth-modal-content" role="document" aria-live="polite" aria-atomic="true">
+    <button id="closeAuth" aria-label="关闭登录注册弹窗" title="关闭弹窗">&times;</button>
+    <div class="auth-tabs" role="tablist" aria-label="登录和注册切换">
+      <button class="active" role="tab" id="loginTab" aria-controls="loginForm" aria-selected="true" tabindex="0">登录</button>
+      <button role="tab" id="registerTab" aria-controls="registerForm" aria-selected="false" tabindex="-1">注册</button>
+    </div>
 
+    <form id="loginForm" class="active" role="tabpanel" aria-labelledby="loginTab" novalidate>
+      <input type="email" placeholder="邮箱" required aria-label="邮箱" autocomplete="username" />
+      <input type="password" placeholder="密码" required aria-label="密码" autocomplete="current-password" />
+      <button type="submit">登录</button>
+    </form>
 
-<!-- 🧠 三、项目成果（统一结构包装） -->
-<section class="about-me" style="margin-top: 40px;">
-  <h2>📌 三、项目成果：<strong>非案例，而是「系统跃迁事件」</strong></h2>
+    <form id="registerForm" role="tabpanel" aria-labelledby="registerTab" hidden novalidate>
+      <input type="text" placeholder="用户名" required aria-label="用户名" autocomplete="username" />
+      <input type="email" placeholder="邮箱" required aria-label="邮箱" autocomplete="email" />
+      <input type="password" placeholder="密码" required aria-label="密码" autocomplete="new-password" />
+      <button type="submit">注册</button>
+    </form>
+  </div>
+</div> 
 
-  <article style="margin-top: 20px;">
-    <h3>🔷 项目一：1500万工业品外贸系统闭环（2017–2024）</h3>
-    <p><strong>关键词：</strong>多渠道引流、结构性报价、团队系统SOP建设、客户复购</p>
-    <ul>
-      <li>依托阿里巴巴国际站第三方流量平台 + 官网双链路独立搭建，实现询盘获取 → 分层响应 → 返单留存的完整销售闭环；</li>
-      <li>构建询盘自动响应机制，设立客户分层管理逻辑，显著提升转化效率；</li>
-      <li>整合供应链、物流履约与仓储管理，建立团队协同 SOP 标准流程；</li>
-      <li>打造专业统一的报价单 + 商业发票标准流程，提升客户信任与复购效率；</li>
-      <li>客户标签化管理体系逐步成熟，Repeat Buyer 占比提升至 60%+；</li>
-      <li>实现团队稳定年销售额达 1500 万，团队小而稳，系统弹性强。</li>
-    </ul>
-    <blockquote>
-<p>💡 该项目的核心价值不在于“卖出多少货”，而在于从<strong>平台机会成交</strong>，迈向<strong>复购驱动的结构化运营</strong>，完成了意识层级的跃迁。</p>
-
-    </blockquote>
-  </article>
-</section>
-
-
-  <article style="margin-top: 20px;">
-    <h3>🔷 项目二：AI驱动的模块化多站系统架构（2024-Now）</h3>
-    <p><strong>关键词：</strong>Wayfair对标、语言即系统、数字资产矩阵化、Serverless架构</p>
-    <ul>
-      <li>构建 Shopify + GPT + Serverless 架构，打通前后端/中后台；</li>
-      <li>每个站点具备“内容自动生成 + 询盘自动化 + 客户路径追踪”；</li>
-      <li>支持 20+ 多语言域名复制站点，自动部署 + 中控管理；</li>
-      <li>正在构建基于 GPT 的动态文案系统，逐步实现邮件、SEO、客服脚本的自动化生成；</li>
-
-      <li>实现传统电商需5年完成的系统级积累，在半年内完成跃迁；</li>
-    </ul>
-    <blockquote>
-      <p>💡 这是一个“<strong>数字自我复制系统</strong>”，每个站点都是资产单元，而非内容堆砌。</p>
-    </blockquote>
-  </article>
-</section>
-
-<!-- 🧱 四、合作预期 -->
-<section class="about-me" style="margin-top: 40px;">
-  <h2>🧱 四、合作预期：<strong>不是雇佣，是频率匹配</strong></h2>
-  <p>我不接受“甲方心态”驱动的线性协作，也不接受 KPI驱动的外包执行。 我只和 <strong>拥有系统级思维 </p> 
-    <p> / 长期主义认知 / 渴望构建结构性增长能力</strong> 的团队共创。</p>
-
-  <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
-    <thead>
-      <tr style="background-color: #e0e7ff;">
-        <th style="padding: 8px; border: 1px solid #ccc;">合作类型</th>
-        <th style="padding: 8px; border: 1px solid #ccc;">角色路径</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td style="padding: 8px; border: 1px solid #ccc;">单站项目</td>
-        <td style="padding: 8px; border: 1px solid #ccc;">MVP架构师 / 系统搭建者（用于验证市场或产品）</td>
-      </tr>
-      <tr>
-        <td style="padding: 8px; border: 1px solid #ccc;">多站矩阵</td>
-        <td style="padding: 8px; border: 1px solid #ccc;">技术共创人 / 架构主导者（构建 SEO资产池 + 询盘系统 + 客户路径）</td>
-      </tr>
-      <tr>
-        <td style="padding: 8px; border: 1px solid #ccc;">中台协同</td>
-        <td style="padding: 8px; border: 1px solid #ccc;">AI协同系统总架构（GPT + 数据 + 人协作流程一体化）</td>
-      </tr>
-    </tbody>
-  </table>
-</section>
-
-<style>
-  
-.gray-title {
-  color:#555555!important; 
-}
-  @media print {
-    .gray-title {
-      color: #888 !important;
-    }
-  }
-</style>
-
-<section class="about-me" style="margin-top: 40px;">
-  <h2 class="gray-title">🚫 不合作对象（认知错配风险高）</h2>
-  <ul>
-  <ul>
-    <li><p>💸 以为“高薪”能绑定人才，仅是执行指令的齿轮；</p></li>
-    <li><p>🛠️ 误以为“技术”只是“页面改改+插件拼装”；</p></li>
-    <li><p> ⚠️只聚焦短期转化，或片面从招聘规模评估价值，缺乏系统化组织升级</p>
-      <p>📉 堆积人数与规模扩张，却带来的是风险与压力，非效率与质量的飞跃。</p>
-    </li> 
-  </ul>
-</section>
-
-<!-- 🎓 六、教育经历 + 技能标签（结构统一） -->
-<section class="about-me" style="margin-top: 40px;">
-  <h2>🎓 六、教育经历 + 技能标签（现实结合理性）</h2>
-
-  <p><strong>长春大学｜电子信息工程（2008–2012）统招本科</strong></p>
-  <p>毕业设计方向：物联网数字化智能家居系统开发</p>
-
-  <h3 style="margin-top: 20px;">⚙️ 技能标签：</h3>
-  <ul>
-    <li><strong>技术：</strong>Shopify / Liquid / Next.js / Node.js / GraphQL / Serverless / Vercel / RESTful API</li>
-    <li><strong>商业：</strong>跨境电商B2B / 产品选型 / SEO优化 / 询盘流程设计 / 报价系统 / 客户管理</li>
-    <li><strong>工具：</strong>GitHub / Notion / Zapier / Postman / GPT API / Netlify / Nginx / Google Sheets</li>
-  </ul>
-</section>
-
-<!-- 🧭 七、职业路径进化（从工程 → 外贸 → 系统构建） -->
-<section class="about-me" style="margin-top: 40px;">
-  <h2>🧭 七、职业路径进化：从工程 → 外贸 → 系统构建</h2>
-
-  <article style="margin-top: 20px;">
-    <h3>📍 2012.07 – 2013.11 ｜电子工程师 → 品控主管</h3>
-    <p>就职于 <strong>创维集团</strong>液晶分公司（万人级制造企业），初始为液晶研发部电子工程师，后被选拔为品质主管，主导IPQC稽核与跨部门品控协调。</p>
-    <p>在制造体系中逐步意识到传统产业路径的增长瓶颈，明确认知天花板后，主动决策转型。</p>
-    <p><strong>意识转折：</strong>2013年底，明确将发展路径转向“外贸 + 数字系统构建”方向，开始积累技术与商业双向能力。</p>
-  </article> 
-
-  <article style="margin-top: 20px;">
-    <h3>📍 2014.01 – 2016.12 ｜B2B平台运营 → 外贸主管</h3>
-    <p>就职于 <strong>深圳××科技有限公司</strong>（小型B2B外贸企业），初始岗位为平台运营，负责阿里国际站关键词排名、产品信息优化、询盘处理等基础运营任务。</p>
-    <p>2015年转岗为外贸业务员，逐步承担客户开发与订单转化职责，并在同年被提升为外贸主管，开始统筹小团队的业务流程与绩效优化。</p>
-    <p><strong>关键跃迁：</strong>在此阶段完成从“职能型岗位”到“闭环型业务负责人”的角色跨越，初步建立“系统性增长”意识。</p>
-    <p><strong>意识转折：</strong>2016年底，决定重点深耕阿里巴巴国际站平台，开始积累运营经验与客户资源，为后续业务系统化打下基础。</p>
-
-  </article> 
-
-  <article style="margin-top: 20px;">
-    <h3>📍 2017.09 – 2024.05 ｜外贸创始人 | 商业闭环搭建者 </h3> 
-    <p>创办 <strong>深圳华云邦科技有限公司</strong>（7人团队规模），专注于工业品（3C / PCB / 机械）领域的出口业务。采用“阿里国际站 + B2B独立站”双渠道运营模式，打造从流量引入、客户询盘到成交履约的完整商业闭环。</p>
-    <ul>
-      <li><p>团队管理：从0组建至7人；</p></li>
-      
-      <li><p>平台运营：2017年投资阿里巴巴国际站，到2021年升级为四星金品诚企，依托阿里巴巴第三方流量，构建SEO引流机制、报价流程与标准履约模板；</p></li> 
-
-      <li><p>销售成果：2021年达成年销售额1500万元，培养出1名年销400万元的业务核心成员。</p></li>
-    </ul>
-    <p><strong>关键跃迁：</strong>因为第三方流量的不稳定和人力管理等因素，摸索出商业模式必须从“业务靠人”转型为“系统驱动增长”，实现稳定复购与组织可复制性。</p>
-    <p><strong>意识驱动：</strong>明确“系统性结构才是最强杠杆”，从2024年起全面转向技术架构与自动化系统构建方向。</p>
-  </article>
-
-  <article style="margin-top: 20px;">
-    <h3>📍 2024.12 – 至今 ｜系统架构师CEO | 多站复制系统设计者</h3> 
-    <p>作为 <strong>创始人兼系统架构师</strong>，主导 <strong>香港华云邦科技有限公司</strong>（技术驱动型系统服务商） 的产品体系设计与核心架构搭建。</p>
-
-   <p>作为核心架构师，主导设计并落地面向未来的企业级数字基础设施，驱动业务形态与技术体系深度融合。</p>
-
-  <p>构建基于 Shopify + Serverless 架构的高可扩展微服务矩阵，结合GPT自然语言生成技术，与订单库存中台的无缝协同，显著降低人工干预，实现全链路智能化运维；</p>
-
-  <p>实现多语言、多币种的动态适配机制，打造具备强弹性和容灾能力的多站复制系统，保障业务全球化稳定运行；</p>
-
-  <p>借鉴并优化Wayfair早期系统架构逻辑，构建符合中国跨境电商生态的结构化数字资产体系，夯实技术壁垒，提升系统的可复制性、可维护性与长期演进能力；</p>
-      <li>对标 Wayfair 早期系统逻辑，推动 B2B 企业构建结构化数字资产矩阵。</li>
-    </ul>
-    <p><strong>意识驱动：</strong>该阶段聚焦系统复制性与结构壁垒设计，转型成为融合「AI + 系统语言 + 技术落地」的1%复合型架构师。</p>
-  </article>
-</section>
-
-  <!-- 🚀 数字化转型必然性 -->
-<section class="about-me" style="margin-top: 40px; max-width: 640px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333;">
-  <h2 style="color: #1a237e; font-weight: 700; font-size: 1.8rem; margin-bottom: 24px; padding-left: 12px; border-left: 4px solid #2196f3;">
-    🚀 数字化转型，已成必然
-  </h2>
-
-  <article style="margin-bottom: 24px; font-size: 1.1rem; line-height: 1.6;">
-    <p>不拥抱数字化，企业就会被时代淘汰。</p>
-    <p>超过70%的领先企业都把它当成核心战略，转型成功的收入比同行快20%以上。</p>
-    <p>不转型，效率会卡壳，客户会流失，决策会变慢，市场份额也会掉。</p>
-    <p>尤其是制造和B2B行业，数字化不是修修补补，而是彻底变革。</p>
-  </article>
-
-  <article style="margin-bottom: 24px;">
-    <p style="font-weight: 600; margin-bottom: 12px;">只有搭建智能自动化的系统，才能做到：</p>
-    <ul style="padding-left: 20px; color: #555; font-size: 1.1rem; line-height: 1.6; list-style: none;">
-      <li style="position: relative; padding-left: 24px; margin-bottom: 10px;">
-        <span style="position: absolute; left: 0; color: #4caf50; font-weight: bold;">✔</span>订单到交付全流程闭环
-      </li>
-      <li style="position: relative; padding-left: 24px; margin-bottom: 10px;">
-        <span style="position: absolute; left: 0; color: #4caf50; font-weight: bold;">✔</span>持续用数据优化创新
-      </li>
-      <li style="position: relative; padding-left: 24px;">
-        <span style="position: absolute; left: 0; color: #4caf50; font-weight: bold;">✔</span>灵活应对各种风险
-      </li>
-    </ul>
-  </article>
-
-  <article style="font-size: 1.1rem; line-height: 1.6;">
-<p>技术只是工具，真正的力量来自结构设计与思维升级。</p>
-<p>数字化转型不是简单加码，而是重塑未来的底层逻辑。</p>
-<p>当别人担忧被失业与企业被淘汰时，我们已踏上逆流而上的转型之路，先行者无需焦虑。</p> 
-
-  </article>
-</section>
-
-  <!-- 🧭 系统商业闭环独立站对企业长期生存的重要性  -->
-<section class="about-me" style="margin-top: 40px; max-width: 640px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333;">
-  <h2 style="color: #1a237e; font-weight: 700; font-size: 1.8rem; margin-bottom: 24px; padding-left: 12px; "> 
-    🧭 系统商业闭环独立站对企业长期生存的重要性 
-  </h2> 
-
-<section style="margin-top: 30px; padding: 24px; border-radius: 10px; border: 1.5px solid #9c27b0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; background: #faf9fc;">
-  <h2 style="font-size: 26px; color: #5e35b1; margin-top: 20px; margin-bottom: 16px; font-weight: 700; letter-spacing: 0.03em;">
-    
-  </h2>
-
-  <p style="font-size: 16px; line-height: 1.4; color: #3e3e3e; margin-top: 0; margin-bottom: 8px;">
-    现代跨境B2B企业面临的核心挑战之一，是如何摆脱对第三方平台的过度依赖，实现自主可控的客户资源和销售闭环。
-  </p>
-  <p style="font-size: 15px; color: #555; margin-top: 0; margin-bottom: 12px;">
-    根据 <strong>Forrester Research</strong> 报告，约 <strong>72%</strong> 的企业高管认为，构建自有数字化销售闭环，是提升客户生命周期价值和企业抗风险能力的关键举措。
-  </p>
-
-  <p style="font-size: 15px; margin-top: 16px; margin-bottom: 8px;">关键数据对比：</p>
-
-  <table style="width: 100%; border-collapse: collapse; font-size: 15px; color: #374151; margin-top: 8px;">
-    <thead>
-      <tr style="background-color: #f9fafb;">
-        <th style="text-align: left; padding: 6px 10px; border-bottom: 1px solid #d1d5db;">指标</th>
-        <th style="text-align: left; padding: 6px 10px; border-bottom: 1px solid #d1d5db;">具备系统化独立闭环企业</th>
-        <th style="text-align: left; padding: 6px 10px; border-bottom: 1px solid #d1d5db;">依赖第三方平台企业</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td style="padding: 6px 10px; border-bottom: 1px solid #e5e7eb;">平均存活时间</td>
-        <td style="padding: 6px 10px; border-bottom: 1px solid #e5e7eb;">10年以上</td>
-        <td style="padding: 6px 10px; border-bottom: 1px solid #e5e7eb;">不足5年</td>
-      </tr>
-      <tr>
-        <td style="padding: 6px 10px; border-bottom: 1px solid #e5e7eb;">客户复购率提升</td>
-        <td style="padding: 6px 10px; border-bottom: 1px solid #e5e7eb;">约35%</td>
-        <td style="padding: 6px 10px; border-bottom: 1px solid #e5e7eb;">较低，流失率较高</td>
-      </tr>
-      <tr>
-        <td style="padding: 6px 10px; border-bottom: 1px solid #e5e7eb;">运营成本变化</td>
-        <td style="padding: 6px 10px; border-bottom: 1px solid #e5e7eb;">低成本高技术复利杠杆</td> 
-        <td style="padding: 6px 10px; border-bottom: 1px solid #e5e7eb;">成本易受平台规则波动影响</td>
-      </tr>
-      <tr>
-        <td style="padding: 6px 10px;">抗风险能力</td>
-        <td style="padding: 6px 10px;">显著提升</td>
-        <td style="padding: 6px 10px;">较弱，受平台限制</td>
-      </tr>
-    </tbody>
-  </table>
-  <p style="font-size: 12px; color: #888888; margin-top: 10px;">
-     数据源于 ChatGPT，仅为框架式估算，不做精确分析以及过多解释。
-  </p> 
-</section> 
-
-<h2 style="font-size: 26px; color: #5e35b1; margin-top: 40px; margin-bottom: 40px;">
-  ✅ 中国市场网站/系统开发价格等级图谱（2025年版）
-</h2> 
-
-<p style="font-size: 14px; line-height: 1.4; color: #3e3e3e;">
-  ChatGPT 数据 ：我们按 <strong>L1 ~ L5 五个等级</strong>，系统梳理 <strong>功能深度 × 市场价格 × 价值逻辑 × 适配企业级别</strong>，让你清楚自己能做的系统，值多少钱
-</p>
-
-<table class="capability-table" style="width: 100%; border-collapse: collapse; font-size: 14px; color: #374151; margin-top: 15px; border: 1px solid #e5e7eb;">
-  <thead>
-    <tr style="background-color: #f9fafb;">
-      <th style="padding: 4px 8px; text-align: left; border-bottom: 1px solid #d1d5db;">等级</th>
-      <th style="padding: 4px 8px; text-align: left; border-bottom: 1px solid #d1d5db;">类型</th>
-      <th style="padding: 4px 8px; text-align: left; vertical-align: middle; border-bottom: 1px solid #d1d5db;">市场价格区间</th>
-      <th style="padding: 4px 8px; width: 18%; text-align: left; border-bottom: 1px solid #d1d5db; white-space: normal;">客户类型</th>
-      <th style="padding: 4px 8px; width: 12%; text-align: left; border-bottom: 1px solid #d1d5db; white-space: normal;">核心特点</th>
-      <th style="padding: 4px 8px; text-align: left; border-bottom: 1px solid #d1d5db;">效率级别</th>
-      <th style="padding: 4px 8px; text-align: left; border-bottom: 1px solid #d1d5db;">提升效益</th>
-      <th style="padding: 4px 8px; text-align: left; vertical-align: middle; border-bottom: 1px solid #d1d5db;">年度利润潜在估值</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="padding: 4px 8px; background-color: #f9fafb;">🟢 L1</td>
-      <td style="padding: 4px 8px;">模板展示站</td>
-      <td style="padding: 4px 8px; vertical-align: middle;">¥1000 – ¥3,000</td>
-      <td style="padding: 4px 8px;">个体户 / 初级微商</td>
-      <td style="padding: 4px 8px;">WordPress/Shopify模板，几页图文展示，少量交互</td>
-      <td style="padding: 4px 8px;">☆☆☆☆☆</td>
-      <td style="padding: 4px 8px;">☆☆☆☆☆</td>
-      <td class="potential-valuation" style="padding: 4px 8px; vertical-align: middle;">¥10,000 – ¥50,000</td>
-    </tr>
-    <tr>
-      <td style="padding: 4px 8px; background-color: #f9fafb;">🔵 L2</td>
-      <td style="padding: 4px 8px;">营销型电商站</td>
-      <td style="padding: 4px 8px; vertical-align: middle;">¥3,000 – ¥15,000</td>
-      <td style="padding: 4px 8px;">初创品牌 / 小电商</td>
-      <td style="padding: 4px 8px;">有商品模块、收款、轮播图、引导CTA，轻前端转化</td>
-      <td style="padding: 4px 8px;">☆☆☆☆</td>
-      <td style="padding: 4px 8px;">★☆☆☆☆</td>
-      <td class="potential-valuation" style="padding: 4px 8px; vertical-align: middle;">¥50,000 – ¥200,000</td>
-    </tr>
-    <tr>
-      <td style="padding: 4px 8px; background-color: #f9fafb;">🟡 L3</td>
-      <td style="padding: 4px 8px;">轻定制商城 / 外贸站</td>
-      <td style="padding: 4px 8px; vertical-align: middle;">¥15,000 – ¥50,000</td>
-      <td style="padding: 4px 8px;">中小外贸公司 / 品牌独立站</td>
-      <td style="padding: 4px 8px;">多语言+物流+支付+询盘，初步对接 Shopify API / ERP</td>
-      <td style="padding: 4px 8px;">★☆☆☆☆</td>
-      <td style="padding: 4px 8px;">★★☆☆☆</td>
-      <td class="potential-valuation" style="padding: 4px 8px; vertical-align: middle;">¥200,000 – ¥500,000</td>
-    </tr>
-    <tr>
-      <td style="padding: 4px 8px; background-color: #f9fafb;">🟠 L4</td>
-      <td style="padding: 4px 8px;">半自动化业务系统</td>
-      <td style="padding: 4px 8px; vertical-align: middle;">¥50,000 – ¥150,000</td>
-      <td style="padding: 4px 8px;">有运营团队的 B2B 商家</td>
-      <td style="padding: 4px 8px;">支持自动报价、客户分级、通知流、数据结构化流程自动化、提升5-10倍人工效率</td>
-      <td style="padding: 4px 8px;">★★★☆☆</td>
-      <td style="padding: 4px 8px;">★★★★★</td>
-      <td class="potential-valuation" style="padding: 4px 8px; vertical-align: middle;">¥500,000 – ¥2,000,000</td>
-    </tr>
-    <tr>
-      <td style="padding: 4px 8px; background-color: #f9fafb;">🔴 L5</td>
-      <td style="padding: 4px 8px;">商业系统平台（可复用）</td>
-      <td style="padding: 4px 8px; vertical-align: middle;">¥150,000 – ¥500,000+</td>
-      <td style="padding: 4px 8px;">SaaS 初创 / 品牌平台型团队</td>
-      <td style="padding: 4px 8px;">模块级系统、可配置客户流、API接口、AI协同、可复用系统结构</td>
-      <td style="padding: 4px 8px;">★★★★★</td>
-      <td style="padding: 4px 8px;">★★★★★</td>
-      <td class="potential-valuation" style="padding: 4px 8px; vertical-align: middle;">¥2,000,000 – ¥10,000,000+</td>
-    </tr>
-  </tbody>
-</table>
-
-    <!-- 🧬 项目定位 -->
-    <section class="about-me" style="margin-top: 40px;"> 
-
-<h2 style="font-size: 26px; color: #5e35b1; margin-top: 40px; margin-bottom: 40px;">
-     <td>🎯 正在架构的「 多站点 」项目定位：L3 - L4 </td> 
-  
-</h2> 
-
-<blockquote style="max-width: 1000px; padding-left: 12px; padding-right: 12px; margin: 0 auto;">
-  <p><strong>功能维度：</strong>具备用户注册验证、订单查询、Webhook同步、权限控制，已接入 Shopify Storefront API，Netlify Functions做无服务器后端。</p>
-  <p><strong>业务复杂度：</strong>中小品牌独立站或外贸轻量级电商系统级别。</p>
-  <p><strong>市场比例：</strong>位于独立站市场中较为高级的<strong>Top20%</strong>轻定制商城层级，超过了基础模板站（40%份额）和普通营销站（30%份额），功能更完善、业务逻辑更复杂。</p>
-  <p><strong>技术水平：</strong>服务器无状态架构，前后端分离，较现代，技术栈优势明显。</p>
-  <p><strong>估值位置：</strong>远超模板站和基础营销站，但距离大型定制系统和SaaS平台还有一定差距。</p>
-  <p><span class="checkmark">✅</span>ChatGPT : 这是个很健康、很有竞争力的中小企业级独立站级别方案，适合希望快速上线并拥有自己用户体系与订单管理的品牌商。</p>
-</blockquote>
-
-
-<style>
-  .checkmark {
-    margin-right: 8px;
-    display: inline-block;
-  }
-</style>
-</blockquote> 
-    <p style="font-size: 14px; line-height: 1.4; color: #3e3e3e;">
-        © 2025 HawinB2B. All Rights Reserved.
+<section class="partner-connect-section" aria-labelledby="partnerConnectTitle">
+  <div class="partner-connect-container">
+    <h2 id="partnerConnectTitle">合作意向交流</h2>
+    <p class="desc">
+      立即留下您的邮箱，<strong>获取专属数字化系统升级解决方案</strong> 
     </p>
-</div>
-</section>   
+    <form id="partnerForm" novalidate>
+      <input type="text" id="partnerName" name="name" placeholder="您的姓名（可选）" />
+      <input type="email" id="partnerEmail" name="email" placeholder="请输入您的邮箱" required aria-required="true" />
+      <button type="submit">立即行动</button>
+  
+    </p>
+  </div>
+</section>
 
-<!-- 🌐 右下角按钮 -->
-<div id="floating-buttons" style="position: fixed; bottom: 30px; right: 30px; z-index: 9999; display: flex; gap: 12px;">
 
-  <button onclick="openL2Website()" style="
-    background-color: #3b82f6;
-    color: white;
-    border: none;
-    padding: 10px 16px;
-    border-radius: 8px;
-    font-size: 14px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    cursor: pointer;
-    transition: background-color 0.3s;
-  " onmouseover="this.style.backgroundColor='#2563eb'" onmouseout="this.style.backgroundColor='#3b82f6'">
-    🔎 目前展示 L2 层级网站
-  </button>
-
-  <button onclick="printPages1to5()" style="
-    background-color: #10b981;
-    color: white;
-    border: none;
-    padding: 10px 16px;
-    border-radius: 8px;
-    font-size: 14px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    cursor: pointer;
-    transition: background-color 0.3s;
-  " onmouseover="this.style.backgroundColor='#059669'" onmouseout="this.style.backgroundColor='#10b981'">
-    🖨️ 打印（1-5页） 
-  </button>
-
-</div>
-
-<!-- 🔧 JS 功能：按钮操作 -->
 <script>
-  function openL2Website() {
-    // 替换为你的L2层级网站真实链接
-    window.open('https://Hawinb2b.com', '_blank');
+  
+  const authModal = document.getElementById('authModal');
+const btnSignIn = document.getElementById('btnSignIn');
+const closeAuth = document.getElementById('closeAuth');
+const loginTab = document.getElementById('loginTab');
+const registerTab = document.getElementById('registerTab');
+const loginForm = document.getElementById('loginForm');
+const registerForm = document.getElementById('registerForm');
+
+// 弹窗打开动画
+function animateModalOpen() {
+  const modalContent = authModal.querySelector('.auth-modal-content');
+  modalContent.style.transform = 'scale(0.8)';
+  modalContent.style.opacity = '0';
+  modalContent.style.transition = 'transform 0.25s ease, opacity 0.25s ease';
+  requestAnimationFrame(() => {
+    modalContent.style.transform = 'scale(1)';
+    modalContent.style.opacity = '1';
+  });
+}
+
+// 弹窗关闭动画
+function animateModalClose(callback) {
+  const modalContent = authModal.querySelector('.auth-modal-content');
+  modalContent.style.transform = 'scale(1)';
+  modalContent.style.opacity = '1';
+  modalContent.style.transition = 'transform 0.25s ease, opacity 0.25s ease';
+  requestAnimationFrame(() => {
+    modalContent.style.transform = 'scale(0.8)';
+    modalContent.style.opacity = '0';
+  });
+  setTimeout(() => {
+    callback();
+    modalContent.style.transition = '';
+    modalContent.style.transform = '';
+    modalContent.style.opacity = '';
+  }, 250);
+}
+
+// 切换到登录
+function switchToLogin() {
+  loginTab.classList.add('active');
+  loginTab.setAttribute('aria-selected', 'true');
+  loginTab.setAttribute('tabindex', '0');
+
+  registerTab.classList.remove('active');
+  registerTab.setAttribute('aria-selected', 'false');
+  registerTab.setAttribute('tabindex', '-1');
+
+  loginForm.classList.add('active');
+  loginForm.removeAttribute('hidden');
+
+  registerForm.classList.remove('active');
+  registerForm.setAttribute('hidden', '');
+
+  loginTab.focus();
+}
+
+// 切换到注册
+function switchToRegister() {
+  registerTab.classList.add('active');
+  registerTab.setAttribute('aria-selected', 'true');
+  registerTab.setAttribute('tabindex', '0');
+
+  loginTab.classList.remove('active');
+  loginTab.setAttribute('aria-selected', 'false');
+  loginTab.setAttribute('tabindex', '-1');
+
+  registerForm.classList.add('active');
+  registerForm.removeAttribute('hidden');
+
+  loginForm.classList.remove('active');
+  loginForm.setAttribute('hidden', '');
+
+  registerTab.focus();
+}
+
+// 打开弹窗，默认显示登录或注册
+function openAuthModal(defaultTab = 'login') {
+  authModal.classList.add('show');
+  authModal.setAttribute('aria-hidden', 'false');
+  btnSignIn.setAttribute('aria-expanded', 'true');
+  document.body.style.overflow = 'hidden'; // 禁止滚动
+
+  if (defaultTab === 'login') {
+    switchToLogin();
+  } else {
+    switchToRegister();
   }
 
-  function printPages1to5() {
-    alert('请在打印对话框中，设置打印页码为第1至第5页，谢谢！');
-    window.print();
-  }
-</script>
+  animateModalOpen();
 
+  // 记录当前焦点元素，关闭时恢复焦点
+  openAuthModal.lastFocus = document.activeElement;
+}
+
+// 关闭弹窗
+function closeAuthModal() {
+  animateModalClose(() => {
+    authModal.classList.remove('show');
+    authModal.setAttribute('aria-hidden', 'true');
+    btnSignIn.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = ''; // 恢复滚动
+    if (openAuthModal.lastFocus) {
+      openAuthModal.lastFocus.focus();
+    }
+  });
+}
+
+// 绑定事件
+btnSignIn.addEventListener('click', () => openAuthModal('login'));
+closeAuth.addEventListener('click', closeAuthModal);
+
+// 切换标签事件
+loginTab.addEventListener('click', switchToLogin);
+registerTab.addEventListener('click', switchToRegister);
+
+// 监听键盘支持切换（左右箭头切换标签）
+authModal.querySelector('.auth-tabs').addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+    e.preventDefault();
+    if (loginTab.classList.contains('active')) {
+      switchToRegister();
+    } else {
+      switchToLogin();
+    }
+  } else if (e.key === 'Escape') {
+    closeAuthModal();
+  }
+});
+
+// 点击遮罩关闭弹窗（可选）
+authModal.addEventListener('click', (e) => {
+  if (e.target === authModal) {
+    closeAuthModal();
+  }
+});
+
+
+
+  const partnerForm = document.getElementById('partnerForm');
+  const partnerEmail = document.getElementById('partnerEmail');
+  const partnerName = document.getElementById('partnerName');
+  const formMessage = document.getElementById('formMessage');
+
+  partnerForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    formMessage.textContent = '';
+    formMessage.classList.remove('error');
+
+    const email = partnerEmail.value.trim();
+    const name = partnerName.value.trim();
+
+    if (!email || !email.includes('@')) {
+      formMessage.textContent = '请输入有效的邮箱地址';
+      formMessage.classList.add('error');
+      return;
+    }
+
+    try {
+      const res = await fetch('/.netlify/functions/partner-connect', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, name }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        formMessage.textContent = '✅ 提交成功！请查收验证邮件，我们会尽快联系您。';
+        partnerForm.reset();
+      } else {
+        formMessage.textContent = data.error || '提交失败，请稍后再试。';
+        formMessage.classList.add('error');
+      }
+    } catch (err) {
+      formMessage.textContent = '网络错误，请检查连接后重试。';
+      formMessage.classList.add('error');
+      console.error('[partner-form] error:', err);
+    }
+  });
+
+  
+    (function() {
+    const countdownEl = document.getElementById('countdown');
+    const promoBar = document.getElementById('promoBar');
+    const promoClose = document.getElementById('promoClose');
+
+    function updateCountdown() {
+      const now = new Date();
+      const midnight = new Date();
+      midnight.setHours(24, 0, 0, 0); // 设置为当天午夜
+
+      const diff = midnight - now;
+
+      if (diff <= 0) {
+        countdownEl.textContent = '00:00:00';
+        clearInterval(intervalId);
+        return;
+      }
+
+      const hours = Math.floor(diff / 1000 / 60 / 60);
+      const minutes = Math.floor((diff / 1000 / 60) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+
+      const pad = n => n.toString().padStart(2, '0');
+      countdownEl.textContent = `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+    }
+
+    // 启动倒计时
+    updateCountdown();
+    const intervalId = setInterval(updateCountdown, 1000);
+
+    // 关闭按钮事件
+    promoClose.addEventListener('click', () => {
+      promoBar.style.display = 'none';
+    });
+  })();
+
+  
+  </script>  
 </body>
+
+
+
 
 </html>   
