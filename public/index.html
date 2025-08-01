@@ -497,21 +497,21 @@
 
 /* ② 新沙漏动画优化样式，用独立类名 */
 .hourglass-optimized {
-  width: 30px;   /* 原来是 50px */
-  height: 42px;  /* 原来是 70px */
+  width: 30px;
+  height: 42px;
   position: relative;
-  animation: flipHourglass 5s ease-in-out infinite;
+  animation: flipHourglass 5s linear infinite;
   transform-origin: center center;
-  margin-left: 0.4rem; /* 可选，让沙漏与倒计时之间更平衡 */
+  margin-left: 0.4rem;
 }
 
 @keyframes flipHourglass {
-  0%, 100% {
-    transform: rotate(0deg);
-  }
-  50% {
-    transform: rotate(180deg);
-  }
+  0% { transform: rotate(0deg); }
+  10% { transform: rotate(0deg); }      /* 停顿在初始 */
+  40% { transform: rotate(180deg); }    /* 翻转 */
+  60% { transform: rotate(180deg); }    /* 停顿在180度 */
+  90% { transform: rotate(360deg); }    /* 翻回 */
+  100% { transform: rotate(360deg); }   /* 准备下一轮 */
 }
 
 .hourglass-optimized svg {
@@ -536,36 +536,28 @@
   transform-origin: center;
 }
 
-/* 每个沙粒独立动画参数（已调整尺寸和位置） */
-.hourglass-optimized .grain:nth-child(1) {
-  animation-duration: 5s, 1.2s;
-  animation-delay: 0s, 0s;
-  r: 1.4;
-  cx: 17;
-}
+/* 每颗沙粒动画时间稍微错开 */
 .hourglass-optimized .grain:nth-child(2) {
   animation-duration: 4.8s, 1.3s;
   animation-delay: 0.8s, 0.2s;
-  r: 1.2;
-  cx: 21;
 }
 .hourglass-optimized .grain:nth-child(3) {
   animation-duration: 5.2s, 1.1s;
   animation-delay: 1.5s, 0.5s;
-  r: 1.3;
-  cx: 19;
 }
 .hourglass-optimized .grain:nth-child(4) {
   animation-duration: 5s, 1.4s;
   animation-delay: 2.2s, 0.8s;
-  r: 1.1;
-  cx: 22;
 }
 .hourglass-optimized .grain:nth-child(5) {
   animation-duration: 5.1s, 1.3s;
   animation-delay: 3s, 0.4s;
-  r: 1.3;
-  cx: 20;
+}
+
+/* 第一颗默认参数 */
+.hourglass-optimized .grain:nth-child(1) {
+  animation-duration: 5s, 1.2s;
+  animation-delay: 0s, 0s;
 }
 
 @keyframes fall {
@@ -926,9 +918,31 @@ authModal.addEventListener('click', (e) => {
     });
   })();
 
+    // 获取沙漏容器元素（用于检测其旋转状态） 
+   const hourglass = document.querySelector('.hourglass-optimized');
+  const grains = hourglass.querySelectorAll('.grain');
+
+  function updateGrainState() {
+    // 获取当前旋转角度（0, 180, 360）
+    const style = getComputedStyle(hourglass);
+    const matrix = new DOMMatrixReadOnly(style.transform);
+    const angle = Math.round(Math.atan2(matrix.b, matrix.a) * (180 / Math.PI));
+
+    // 如果接近 0°、180°、360°，暂停粒子动画
+    const isAtStop = angle % 180 === 0;
+
+    grains.forEach(grain => {
+      grain.style.animationPlayState = isAtStop ? 'paused' : 'running';
+    });
+  }
+  setInterval(updateGrainState, 50); // 每 50ms 检查一次角度
   
   </script>  
 </body>
+
+
+
+
 
 
 
