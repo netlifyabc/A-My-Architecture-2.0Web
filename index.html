@@ -611,7 +611,6 @@
   <button class="promo-close" id="promoClose" aria-label="关闭促销条">&times;</button>
 </div>
 
-
   <!-- Header -->
   <header class="site-header">
     <div class="header-inner">
@@ -656,7 +655,6 @@
       登录
     </button>
   </div>
-
 </div> 
   </header> 
 
@@ -837,11 +835,13 @@ authModal.addEventListener('click', (e) => {
     closeAuthModal();
   }
 });
-
 const partnerForm = document.getElementById('partnerForm');
 const partnerEmail = document.getElementById('partnerEmail');
 const partnerName = document.getElementById('partnerName');
 const formMessage = document.getElementById('formMessage');
+
+// 这里改成你的 Netlify 函数完整 URL
+const partnerConnectUrl = 'https://my-netlify-hof.netlify.app/.netlify/functions/partner-connect';
 
 partnerForm.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -858,7 +858,7 @@ partnerForm.addEventListener('submit', async (e) => {
   }
 
   try {
-    const res = await fetch('/.netlify/functions/partner-connect', {
+    const res = await fetch(partnerConnectUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, name }),
