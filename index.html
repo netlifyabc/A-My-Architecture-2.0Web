@@ -692,14 +692,128 @@
   100% {
     transform: translateX(2px);
   }
+} 
+
+
+/* 手机端布局调整 */
+@media (max-width: 768px) {
+  /* 促销条 */
+  .promo-bar {
+    padding: 8px 10px;
+    font-size: 14px;
+    display: flex;
+    flex-wrap: wrap; /* 自动换行 */
+    align-items: center;
+    justify-content: space-between;
+  }
+  .promo-text {
+    flex: 1 1 100%;
+    margin-bottom: 6px;
+  }
+  .countdown {
+    font-weight: bold;
+    flex: none;
+    margin-right: 8px;
+  }
+  .hourglass-optimized {
+    width: 24px;
+    height: 36px;
+  }
+  .promo-close {
+    flex: none;
+    font-size: 24px;
+    line-height: 1;
+    padding: 0 6px;
+  }
+
+  /* 头部整体改成纵向布局 */
+  .site-header .header-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 15px;
+  }
+
+  /* Logo 居左且不占用过多空间 */
+  .site-header .logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+
+  /* 导航改成隐藏菜单 + 汉堡按钮（基础版先隐藏导航，后续可加JS实现菜单切换） */
+  .main-nav {
+    width: 100%;
+    overflow-x: auto; /* 小屏时横向滚动，避免菜单断行 */
+  }
+  .main-nav ul {
+    display: flex;
+    gap: 12px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+  .main-nav li a {
+    padding: 8px 12px;
+    display: block;
+    white-space: nowrap;
+  }
+
+  /* 搜索区域横向扩展 */
+  .search-area {
+    width: 100%;
+    display: flex;
+    gap: 6px;
+  }
+  .search-area input[type="search"] {
+    flex: 1;
+    padding: 6px 8px;
+    font-size: 14px;
+  }
+  .search-btn {
+    flex: none;
+    padding: 6px 12px;
+    font-size: 16px;
+  }
+
+  /* 操作区域按钮调整 */
+  .action-area .header-actions {
+    display: flex;
+    gap: 12px;
+  }
+  .icon-btn, .btn-signin {
+    padding: 6px 10px;
+    font-size: 14px;
+  }
+
+  /* 合作意向表单宽度自适应 */
+  .partner-connect-container {
+    padding: 15px;
+  }
+  .partner-connect-section form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .partner-connect-section select,
+  .partner-connect-section input[type="email"] {
+    width: 100%;
+    padding: 8px 10px;
+    font-size: 14px;
+  }
+  .partner-connect-section button[type="submit"] {
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+  }
 }
+
 
   </style>
 </head>
 <body>
 
-<!-- 促销条 -->
-
+<!-- 促销条 --> 
 
 <div class="promo-bar" id="promoBar">
 <span class="promo-text">
@@ -960,71 +1074,80 @@
     });
   }
 
-  // 合作意向表单
-  const partnerForm = document.getElementById('partnerForm');
-  const partnerEmail = document.getElementById('partnerEmail');
-  const partnerName = document.getElementById('partnerName');
-  const formMessage = document.getElementById('formMessage');
+// 合作意向表单
+const partnerForm = document.getElementById('partnerForm');
+const partnerEmail = document.getElementById('partnerEmail');
+const partnerName = document.getElementById('partnerName');
+const userTypeSelect = document.getElementById('userType');  // 获取 select 元素
+const formMessage = document.getElementById('formMessage');
 
-  if (partnerForm) {
-    let isSubmitting = false;
+if (partnerForm) {
+  let isSubmitting = false;
 
-    partnerForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      if (isSubmitting) return; // 防止重复提交
-      formMessage.textContent = '';
-      formMessage.classList.remove('error');
+  partnerForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (isSubmitting) return; // 防止重复提交
+    formMessage.textContent = '';
+    formMessage.classList.remove('error');
 
-      const email = partnerEmail.value.trim();
-      const name = partnerName.value.trim();
+    const email = partnerEmail.value.trim();
+    // name 可为空，不做必填校验
+    const name = partnerName ? partnerName.value.trim() : '';
+    const userType = userTypeSelect ? userTypeSelect.value : '';
 
-// ✅ 更严谨邮箱验证正则
-const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-if (!email || !emailPattern.test(email)) {
-  formMessage.textContent = '请输入有效的邮箱地址';
-  formMessage.classList.add('error');
-  return;
-}
+    // 验证选择内容类型（必填）
+    if (!userType) {
+      formMessage.textContent = '请选择您想要获取的内容类型';
+      formMessage.classList.add('error');
+      return;
+    }
 
-isSubmitting = true;
+    // 更严谨邮箱验证正则
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailPattern.test(email)) {
+      formMessage.textContent = '请输入有效的邮箱地址';
+      formMessage.classList.add('error');
+      return;
+    }
 
-try {
-  const res = await fetch('https://my-netlify-hof.netlify.app/.netlify/functions/partner-connect', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ email, name }),
-    mode: 'cors' // ✅ 启用跨域模式
+    isSubmitting = true;
+
+    try {
+      const res = await fetch('https://my-netlify-hof.netlify.app/.netlify/functions/partner-connect', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, name, userType }),
+        mode: 'cors' // 启用跨域模式
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        formMessage.textContent = '✅ 提交成功！请查收验证邮件，我们会尽快联系您。';
+        partnerForm.reset();
+
+        // 提交成功后提示3秒后清空
+        setTimeout(() => {
+          formMessage.textContent = '';
+          formMessage.classList.remove('error');
+        }, 3000);
+      } else {
+        formMessage.textContent = data.error || '提交失败，请稍后再试。';
+        formMessage.classList.add('error');
+      }
+
+    } catch (err) {
+      formMessage.textContent = '网络错误，请检查连接后重试。';
+      formMessage.classList.add('error');
+      console.error('[partner-form] error:', err);
+
+    } finally {
+      isSubmitting = false;
+    }
   });
-
-  const data = await res.json();
-
-  if (res.ok) {
-    formMessage.textContent = '✅ 提交成功！请查收验证邮件，我们会尽快联系您。';
-    partnerForm.reset();
-
-    // ✅ 提交成功后提示3秒后清空
-    setTimeout(() => {
-      formMessage.textContent = '';
-      formMessage.classList.remove('error');
-    }, 3000);
-  } else {
-    formMessage.textContent = data.error || '提交失败，请稍后再试。';
-    formMessage.classList.add('error');
-  }
-
-} catch (err) {
-  formMessage.textContent = '网络错误，请检查连接后重试。';
-  formMessage.classList.add('error');
-  console.error('[partner-form] error:', err);
-
-} finally {
-  isSubmitting = false;
 }
-
-    });
-  }
 
   // 活动倒计时（自执行函数封装）
   (function() {
@@ -1104,6 +1227,6 @@ try {
   }
 </script>
 
-</body>
+</body> 
 
 </html>    
