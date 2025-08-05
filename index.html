@@ -694,98 +694,10 @@
   }
 } 
 
-
-/* 手机端常用断点 */
 @media (max-width: 600px) {
-  /* 促销条文字换行，字体稍微小点 */
-  .promo-bar {
-    padding: 8px 10px;
-    font-size: 14px;
-    white-space: normal; /* 允许换行 */
-  }
-  .promo-bar .countdown {
-    display: block;
-    margin-top: 5px;
-    font-weight: bold;
-  }
-
-
-  /* Header调整 */
-  .site-header {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 10px;
-  }
-
-  .header-inner {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-  }
-
-  /* Logo居中或者靠左，字体稍小 */
-  .logo {
-    font-size: 20px;
-    margin-bottom: 10px;
-  }
-
-  /* 导航菜单改成垂直列表，减少间距 */
-  .main-nav ul {
-    flex-direction: column;
-    padding-left: 0;
-  }
-  .main-nav li {
-    margin: 6px 0;
-  }
-
-  /* 搜索区全宽，按钮和输入框竖直排列 */
-  .search-area {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    margin-top: 10px;
-  }
-  .search-area input[type="search"] {
-    width: 100%;
-    padding: 8px;
-    box-sizing: border-box;
-    margin-bottom: 6px;
-  }
-  .search-btn {
-    width: 100%;
-    padding: 8px;
-  }
-
-  /* 操作区按钮缩小且横向排列 */
-  .header-actions {
-    margin-top: 10px;
-    width: 100%;
-    display: flex;
-    justify-content: flex-start;
-    gap: 10px;
-  }
-
-  /* 登录按钮字体缩小 */
-  .btn-signin {
-    font-size: 14px;
-    padding: 6px 12px;
-  }
-
-  /* 合作意向区调整 */
-  .partner-connect-container {
-    padding: 15px 10px;
-  }
-  #partnerForm {
-    display: flex;
-    flex-direction: column;
-  }
-  #partnerForm select,
-  #partnerForm input[type="email"],
-  #partnerForm button {
-    width: 100%;
-    margin-bottom: 10px;
-    font-size: 14px;
-    padding: 8px;
+  nav {
+    flex-direction: column;  /* 手机端竖排 */
+    padding: 10px 20px;      /* 缩小内边距 */
   }
 }
 
