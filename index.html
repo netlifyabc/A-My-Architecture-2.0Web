@@ -693,7 +693,6 @@
     transform: translateX(2px);
   }
 } 
-
 /* === 基础全局设置，禁止横向滚动 === */
 html, body {
   margin: 0;
@@ -726,6 +725,88 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+  }
+
+  .header-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  .main-nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  .main-nav li a {
+    display: inline-block;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.95rem;
+  }
+
+  .search-area {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .search-area input[type="search"] {
+    flex: 1 1 60%;
+    min-width: 160px;
+    padding: 0.5rem;
+    font-size: 1rem;
+  }
+
+  .search-area .search-btn {
+    padding: 0.5rem 0.75rem;
+    font-size: 1rem;
+  }
+
+  .action-area {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+
+  .header-actions {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+
+  .btn-signin {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.95rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+  }
+
+  .icon-btn {
+    background: none;
+    border: none;
+    padding: 0.5rem;
+  }
+
+  .action-icons {
+    width: 22px;
+    height: 22px;
   }
 
   /* 合作意向交流区域占据 2/3 屏幕 */
@@ -1190,6 +1271,5 @@ if (partnerForm) {
 
 </body> 
 
+
 </html>    
-
-
