@@ -960,7 +960,6 @@
     });
   }
 
-
   // 合作意向表单
   const partnerForm = document.getElementById('partnerForm');
   const partnerEmail = document.getElementById('partnerEmail');
@@ -979,46 +978,53 @@
       const email = partnerEmail.value.trim();
       const name = partnerName.value.trim();
 
-      // 更严谨邮箱验证正则
-      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!email || !emailPattern.test(email)) {
-        formMessage.textContent = '请输入有效的邮箱地址';
-        formMessage.classList.add('error');
-        return;
-      }
+// ✅ 更严谨邮箱验证正则
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+if (!email || !emailPattern.test(email)) {
+  formMessage.textContent = '请输入有效的邮箱地址';
+  formMessage.classList.add('error');
+  return;
+}
 
-      isSubmitting = true;
-      try {
-        const res = await fetch('/.netlify/functions/partner-connect', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, name }),
-        });
+isSubmitting = true;
 
-        const data = await res.json();
-        if (res.ok) {
-          formMessage.textContent = '✅ 提交成功！请查收验证邮件，我们会尽快联系您。';
-          partnerForm.reset();
+try {
+  const res = await fetch('https://my-netlify-hof.netlify.app/.netlify/functions/partner-connect', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ email, name }),
+    mode: 'cors' // ✅ 启用跨域模式
+  });
 
-          // 提交成功后提示3秒后清空
-          setTimeout(() => {
-            formMessage.textContent = '';
-            formMessage.classList.remove('error');
-          }, 3000);
-        } else {
-          formMessage.textContent = data.error || '提交失败，请稍后再试。';
-          formMessage.classList.add('error');
-        }
-      } catch (err) {
-        formMessage.textContent = '网络错误，请检查连接后重试。';
-        formMessage.classList.add('error');
-        console.error('[partner-form] error:', err);
-      } finally {
-        isSubmitting = false;
-      }
-    });
+  const data = await res.json();
+
+  if (res.ok) {
+    formMessage.textContent = '✅ 提交成功！请查收验证邮件，我们会尽快联系您。';
+    partnerForm.reset();
+
+    // ✅ 提交成功后提示3秒后清空
+    setTimeout(() => {
+      formMessage.textContent = '';
+      formMessage.classList.remove('error');
+    }, 3000);
+  } else {
+    formMessage.textContent = data.error || '提交失败，请稍后再试。';
+    formMessage.classList.add('error');
   }
 
+} catch (err) {
+  formMessage.textContent = '网络错误，请检查连接后重试。';
+  formMessage.classList.add('error');
+  console.error('[partner-form] error:', err);
+
+} finally {
+  isSubmitting = false;
+}
+
+    });
+  }
 
   // 活动倒计时（自执行函数封装）
   (function() {
@@ -1071,7 +1077,6 @@
     });
   })();
 
-
   // 沙漏粒子动画控制，使用requestAnimationFrame替代setInterval，性能更好
   const hourglass = document.querySelector('.hourglass-optimized');
   if (hourglass) {
@@ -1099,8 +1104,6 @@
   }
 </script>
 
-
 </body>
-
 
 </html>    
