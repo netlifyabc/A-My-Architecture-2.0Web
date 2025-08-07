@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- ① Meta & Title & Bootstrap 引入 -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bijander 35” Velvet Task Chair - Product Page</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+  <!-- ① CSS 样式 -->
+  <style> 
+
+/* Reset & Base */
+body {
+  background: #f8f9fa; /* 更亮的浅灰，接近 Wayfair 背景 */
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
+  color: #222;
+  overflow-x: hidden;
+}
+
+/* Breadcrumb */
+.breadcrumb a {
+  color: #6c757d;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+.breadcrumb a:hover {
+  color: #3f51b5; /* Wayfair 蓝紫色 */
+  text-decoration: underline;
+}
+
+/* 产品画廊 */
+.product-gallery {
+  position: relative;
+}
+.main-img {
+  width: 100%;
+  border-radius: 12px;
+  object-fit: cover;
+  max-height: 500px;
+  box-shadow: 0 6px 18px rgba(63, 81, 181, 0.15);
+  cursor: zoom-in;
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.main-img:hover {
+  transform: scale(1.04);
+}
+.thumbs {
+  margin-top: 16px;
+  display: flex;
+  gap: 14px;
+  justify-content: flex-start;
+}
+.thumbs img {
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 2.5px solid transparent;
+  box-shadow: 0 3px 8px rgba(63, 81, 181, 0.12);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.thumbs img.active {
+  border-color: #3f51b5;
+  box-shadow: 0 4px 12px rgba(63, 81, 181, 0.3);
+}
+
+/* 产品信息 */
+.product-title {
+  font-size: 2.4rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: #2c2c2c;
+  line-height: 1.1;
+}
+.product-sub {
+  color: #666;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  letter-spacing: 0.02em;
+}
+
+/* 评分 */
+.rating {
+  color: #fbc02d; /* 金黄色星星 */
+  font-size: 1.3rem;
+  user-select: none;
+}
+.rating ~ span {
+  margin-left: 10px;
+  color: #999;
+  font-size: 1rem;
+  user-select: none;
+}
+
+/* 价格 */
+.price {
+  font-size: 2.3rem;
+  font-weight: 800;
+  color: #673ab7; /* 深紫色 */
+  margin-top: 16px;
+  user-select: none;
+  letter-spacing: 0.02em;
+}
+
+/* 变体标签 */
+.variant-label {
+  font-weight: 600;
+  margin-top: 28px;
+  display: block;
+  font-size: 1.15rem;
+  color: #444;
+  letter-spacing: 0.015em;
+}
+
+/* 按钮 */
+.btn-primary {
+  background-color: #673ab7;
+  border: none;
+  font-weight: 700;
+  font-size: 1.1rem;
+  padding: 14px 0;
+  border-radius: 8px;
+  box-shadow: 0 6px 15px rgba(103, 58, 183, 0.35);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+.btn-primary:hover {
+  background-color: #512da8;
+  box-shadow: 0 8px 22px rgba(81, 45, 168, 0.45);
+}
+
+.btn-outline-secondary {
+  font-weight: 600;
+  color: #673ab7;
+  border: 2px solid #673ab7;
+  padding: 12px 0;
+  font-size: 1.05rem;
+  border-radius: 8px;
+  background: transparent;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  cursor: pointer;
+}
+.btn-outline-secondary:hover {
+  background-color: #673ab7;
+  color: #fff;
+}
+
+/* 详情区域 */
+.details-section {
+  background: #fff;
+  padding: 40px 32px;
+  border-radius: 12px;
+  margin-top: 48px;
+  box-shadow: 0 6px 24px rgba(103, 58, 183, 0.08);
+  color: #444;
+}
+.details-section h4 {
+  font-weight: 700;
+  margin-bottom: 1.2rem;
+  font-size: 1.5rem;
+  border-bottom: 3px solid #e0e0e0;
+  padding-bottom: 10px;
+  color: #2c2c2c;
+}
+.specs dt {
+  font-weight: 700;
+  margin-top: 14px;
+  color: #555;
+  font-size: 1.05rem;
+}
+.specs dd {
+  margin-left: 0;
+  color: #666;
+  font-size: 1rem;
+  margin-bottom: 10px;
+}
+
+/* 评价 */
+.reviews .review {
+  border-bottom: 1px solid #eee;
+  padding: 20px 0;
+  color: #444;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+.reviews .review strong {
+  color: #3f51b5;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+.reviews .review span.text-muted {
+  font-size: 0.95rem;
+  margin-left: 8px;
+  color: #888;
+}
+.reviews .review p {
+  margin: 0.5rem 0;
+}
+.reviews small {
+  display: block;
+  font-size: 0.85rem;
+  color: #666;
+}
+.review .rating {
+  font-size: 1.1rem;
+}
+.review img.rounded-circle {
+  border: 1px solid #ddd;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+.reviews .text-muted {
+  margin-left: 8px;
+  font-size: 0.9rem;
+  color: #777 !important;
+}
+
+/* 评分汇总 */
+.rating-summary .stars {
+  font-size: 1.5rem;
+  letter-spacing: 0.03rem;
+  line-height: 1;
+  display: inline-block;
+  color: #ffa41c;
+  background: linear-gradient(90deg, #ffb94e, #ff9900);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.08);
+  font-weight: 600;
+}
+.rating-summary .text-muted {
+  font-size: 0.95rem;
+  color: #555 !important;
+  margin-left: 0.35rem;
+  vertical-align: middle;
+  font-family: "Amazon Ember", Arial, sans-serif;
+  font-weight: 500;
+}
+.text-gold {
+  color: #ffa41c;
+  font-weight: 600;
+  text-shadow: 0 0 2px rgba(255, 164, 28, 0.8);
+}
+
+/* 相关产品 */
+.related .card {
+  border: none;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: box-shadow 0.35s ease, transform 0.35s ease;
+  background: #fff;
+  box-shadow: 0 3px 10px rgba(63, 81, 181, 0.1);
+}
+.related .card:hover {
+  box-shadow: 0 12px 34px rgba(63, 81, 181, 0.25);
+  transform: translateY(-6px);
+}
+.related .card img {
+  object-fit: cover;
+  height: 200px;
+  width: 100%;
+  transition: transform 0.35s ease;
+  border-bottom: 1px solid #e0e0e0;
+}
+.related .card:hover img {
+  transform: scale(1.1);
+}
+.related .card-body {
+  padding: 18px 20px;
+}
+.related .card-body h6 {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #2c2c2c;
+  margin-bottom: 6px;
+}
+.related .card-body p {
+  color: #666;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* 消息提示 */
+#message {
+  margin-top: 16px;
+  min-height: 26px;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.015em;
+}
+#message.info {
+  color: #3f51b5;
+}
+#message.success {
+  color: #388e3c;
+}
+#message.error {
+  color: #d32f2f;
+}
+
+/* 自定义浮动消息弹窗 Toast */
+.toast-message {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: #333;
+  color: #fff;
+  padding: 12px 16px;
+  border-radius: 6px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: 9999;
+  font-size: 14px;
+  pointer-events: none;
+}
+.toast-message.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 购物车抽屉 */
+#cartDrawer {
+  position: fixed;
+  top: 0;
+  right: -360px;
+  width: 360px;
+  height: 100vh;
+  background: #fff;
+  box-shadow: -4px 0 12px rgba(0, 0, 0, 0.1);
+  transition: right 0.35s ease-in-out;
+  z-index: 1300;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  border-radius: 12px 0 0 12px;
+  overflow-y: auto;
+}
+#cartDrawer.open {
+  right: 0;
+}
+.cart-drawer-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 700;
+  font-size: 1.4rem;
+  color: #222;
+  background-color: #f3f3f9;
+  user-select: none;
+}
+.cart-drawer-header span {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+
+.close-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #ececec;
+  border: none;
+  font-size: 1.5rem;
+  color: #555;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  user-select: none;
+}
+
+.close-btn:hover {
+  background-color: #673ab7;
+  color: #fff;
+}
+
+/* 购物车抽屉主体 */
+.cart-drawer-body {
+  flex-grow: 1;
+  padding: 24px 28px;
+  overflow-y: auto;
+  font-size: 0.95rem;
+  color: #444;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* 购物车抽屉底部 */
+.cart-drawer-footer {
+  padding: 20px 28px;
+  border-top: 1px solid #e5e5e5;
+  background-color: #fafafa;
+  display: flex;
+  justify-content: center;
+}
+
+/* 结账按钮 */
+#drawerCheckout {
+  width: 100%;
+  max-width: 320px;
+  height: 48px;
+  background: linear-gradient(135deg, #8E57F4, #6B32C9);
+  border: none;
+  border-radius: 50px;
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-align: center;
+  line-height: 48px;
+  cursor: pointer;
+  user-select: none;
+  box-shadow:
+    inset 0 -2px 4px rgba(0, 0, 0, 0.2),
+    0 4px 12px rgba(107, 50, 201, 0.4);
+  transition: background 0.3s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+#drawerCheckout:hover {
+  background: linear-gradient(135deg, #A176F7, #7E4EF2);
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 -2px 4px rgba(0, 0, 0, 0.2),
+    0 8px 20px rgba(107, 50, 201, 0.5);
+}
+
+#drawerCheckout:active {
+  transform: translateY(0);
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.2),
+    0 2px 8px rgba(107, 50, 201, 0.4);
+}
+
+/* 自定义滚动条样式 */
+#cartDrawer::-webkit-scrollbar {
+  width: 8px;
+}
+
+#cartDrawer::-webkit-scrollbar-track {
+  background: #f9f9f9;
+  border-radius: 10px;
+}
+
+#cartDrawer::-webkit-scrollbar-thumb {
+  background: #7A42F4;
+  border-radius: 10px;
+  transition: background-color 0.3s ease;
+}
+
+#cartDrawer::-webkit-scrollbar-thumb:hover {
+  background: #5E2DB1;
+} 
+.sidebar {
+  position: relative;
+  width: 280px;
+  background: #fff;
+  border: 1px solid #ddd;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.1);
+  padding: 20px;
+  font-size: 14px;
+  border-radius: 6px;
+
+  margin-left: 5px; 
+
+
+  margin-top: 20px;
+  z-index: 9999;
+}
+
+
+/* 价格加粗放大 */
+.sidebar .price {
+  font-size: 24px;
+  font-weight: bold;
+  color: #c00;
+  margin-bottom: 12px;
+}
+
+/* 按钮样式 */
+.sidebar button {
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sidebar button.btn-primary {
+  background-color: #0071dc;
+  color: white;
+  border: none;
+}
+
+.sidebar button.btn-outline-secondary {
+  background: none;
+  border: 1px solid #0071dc;
+  color: #0071dc;
+}
+
+/* 输入框样式 */
+.sidebar input[type="number"] {
+  width: 60px;
+  margin-left: 5px;
+  vertical-align: middle;
+}
+
+/* 各信息之间间隔 */
+.sidebar > div,
+.sidebar label {
+  margin-bottom: 8px;
+}
+
+
+
+.product-layout {
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+}
+
+/* 左边：更宽 */
+.product-gallery {
+  flex: 1.4; 
+  max-width: none;
+}
+
+/* 中间：略小 */
+.product-info {
+  flex: 1.2; 
+  max-width: none;
+}
+
+/* 右边 sidebar：固定宽度 */
+.sidebar {
+  flex: 0 0 260px;
+  max-width: 260px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+
+  </style> 
+
+  </head> 
+
+  <body> 
+<div class="container py-4">
+  <!-- 面包屑导航省略 -->
+
+  <!-- 三栏布局 -->
+  <div class="product-layout d-flex gap-4">
+    <!-- 左侧：产品图 -->
+    <div class="product-gallery">
+      <img src="images/jumway-main.jpg" alt="Jumway Not a Day Over Fabulous Mug" class="main-img" />
+      <div class="thumbs mt-2 d-flex gap-2">
+        <img src="jumway-thumb1.jpg" class="active" alt="Thumbnail 1" />
+        <img src="jumway-thumb2.jpg" alt="Thumbnail 2" />
+        <img src="jumway-thumb3.jpg" alt="Thumbnail 3" />
+        <img src="jumway-thumb4.jpg" alt="Thumbnail 4" />
+      </div>
+    </div>
+
+    <!-- 中间：产品信息 -->
+    <div class="product-info">
+      <h1 class="product-title">Jumway Not a Day Over Fabulous Mug</h1>
+      <p class="product-sub">Funny marble ceramic mug — a fabulously witty gift for milestone birthdays</p>
+
+      <div id="ratingSummary" class="rating-summary d-flex align-items-center gap-2 mt-2">
+        <span class="text-warning small">★★★★☆</span>
+        <a href="#reviews" class="text-decoration-none small">4.7 out of 5 stars (506 ratings)</a>
+        <span class="text-muted small"></span>
+      </div>
+
+      <ul class="list-unstyled mt-3">
+        <li>✔ Novelty marble ceramic mug with “Not a Day Over Fabulous” print</li>
+        <li>✔ Great for milestone birthdays like 21st, 30th, 40th, up to 100th</li>
+        <li>✔ Comes in a gift box with lid, spoon, coaster, coffee socks, greeting card</li>
+        <li>✔ Dishwasher safe; not microwave safe</li>
+      </ul>
+
+      <div class="price mt-2 text-muted"><del>$29.99</del> <span class="text-danger">$19.99</span></div>
+
+      <div class="stock-shipping mt-3">
+        <div class="stock-status text-success mb-1">In Stock.</div>
+        <div class="shipping-info small text-muted">Free delivery by Monday, Aug 10</div>
+      </div>
+
+      <div class="mt-4">
+        <label class="variant-label" for="variantSelect">Color</label>
+        <select class="form-select" id="variantSelect">
+          <option>Classic Gray</option>
+          <option>Navy Blue</option>
+        </select>
+      </div>
+
+      <div class="mt-3">
+        <label class="variant-label" for="quantityInput">Quantity</label>
+        <input type="number" id="quantityInput" class="form-control" min="1" value="1" />
+      </div>
+
+      <div class="mt-4 d-flex gap-3">
+        <button id="addToCartBtn" class="btn btn-primary flex-grow-1">Add to Cart</button>
+        <button id="wishlistBtn" class="btn btn-outline-secondary">Wishlist</button>
+      </div>
+    </div>
+
+    <!-- 右侧：购买和配送信息 -->
+    <aside class="sidebar">
+      <div>FREE International Returns</div>
+      <div>No Import Charges &amp; $7.86 Shipping to Canada Details</div>
+      <div>Delivery Sunday, August 10. Order within 4 hrs 3 mins</div>
+      <div>Deliver to Canada</div>
+      <div class="stock-status text-success">In Stock</div>
+      <label for="quantityInputSidebar">Quantity:</label>
+      <input type="number" id="quantityInputSidebar" value="1" min="1" class="form-control mb-2" />
+      <button class="btn btn-primary mb-2 w-100">Add to Cart</button>
+      <button class="btn btn-outline-secondary mb-3 w-100">Buy Now</button>
+      <div>Ships from Amazon</div>
+      <div>Sold by Royal Joy</div>
+      <div>Payment: Secure transaction</div>
+      <div>Add a gift receipt for easy returns</div>
+      <div>Add to List</div>
+    </aside>
+  </div>
+</div>
+
+
+      </div>
+
+      <!-- ④ 详情区 -->
+      <div class="col-12 mt-5">
+        <div class="details-section">
+          <h4>Product Details</h4>
+          <p>
+            This Jumway mug is a fun, marble‑patterned ceramic gift—perfect for the fabulous women celebrating milestone birthdays. The phrase “Not a Day Over Fabulous” is a delightful reminder that age is just a number! :contentReference[oaicite:1]{index=1}
+          </p>
+
+          <dl class="specs row">
+            <dt class="col-sm-3">Material</dt>
+            <dd class="col-sm-9">Ceramic</dd>
+
+            <dt class="col-sm-3">Capacity</dt>
+            <dd class="col-sm-9">14 oz (approximately 397 g)</dd>
+
+            <dt class="col-sm-3">Microwave Safe?</dt>
+            <dd class="col-sm-9">No, not microwave safe; dishwasher safe however</dd>
+
+            <dt class="col-sm-3">Package Includes</dt>
+            <dd class="col-sm-9">
+              1× mug, 1× lid, 1× spoon, 1× coaster, 1 pair of coffee socks, 1× greeting card, gift box :contentReference[oaicite:2]{index=2}
+            </dd>
+          </dl>
+        </div>
+      </div>
+
+      <!-- ⑤ 评论列表 -->
+      <div class="row g-4 mt-3" id="reviews">
+        <div class="col-12">
+          <div class="d-flex align-items-start gap-3 border-bottom pb-4">
+            <img src="https://i.pravatar.cc/48?u=101" class="rounded-circle" width="48" height="48" alt="Reviewer" />
+            <div>
+              <div class="d-flex align-items-center mb-1">
+                <strong class="me-2">Tymquana Frierson</strong>
+                <div class="text-warning small">★★★★★</div>
+              </div>
+              <p class="mb-1">“This made the perfect gift … super affordable and so cute. Well crafted.”</p>
+              <div class="text-muted small">Reviewed February 1, 2025</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="d-flex align-items-start gap-3 border-bottom pb-4">
+            <img src="https://i.pravatar.cc/48?u=102" class="rounded-circle" width="48" height="48" alt="Reviewer" />
+            <div>
+              <div class="d-flex align-items-center mb-1">
+                <strong class="me-2">FBoyer</strong>
+                <div class="text-warning small">★★★★★</div>
+              </div>
+              <p class="mb-1">“So cute and unique!!”</p>
+              <div class="text-muted small">Reviewed January 27, 2025</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ⑥ 相关产品 -->
+      <div class="col-12 mt-5 related">
+        <h4>Related Products</h4>
+        <div class="row g-3">
+          <div class="col-md-3 col-6">
+            <div class="card" onclick="location.href='#'">
+              <img src="related1.jpg" alt="Related Product 1" />
+              <div class="card-body">
+                <h6 class="mb-1">Lanna Adjustable Desk</h6>
+                <p class="text-muted">$199.00</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 col-6">
+            <div class="card" onclick="location.href='#'">
+              <img src="related2.jpg" alt="Related Product 2" />
+              <div class="card-body">
+                <h6 class="mb-1">Ergo Lumbar Support</h6>
+                <p class="text-muted">$89.00</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 col-6">
+            <div class="card" onclick="location.href='#'">
+              <img src="related3.jpg" alt="Related Product 3" />
+              <div class="card-body">
+                <h6 class="mb-1">Desk Organizer Set</h6>
+                <p class="text-muted">$49.00</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 col-6">
+            <div class="card" onclick="location.href='#'">
+              <img src="related4.jpg" alt="Related Product 4" />
+              <div class="card-body">
+                <h6 class="mb-1">Adjustable LED Lamp</h6>
+                <p class="text-muted">$59.00</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div> 
+
+
+
+<!-- 购物车抽屉区域 -->
+<div id="cartDrawer" class="cart-drawer" aria-label="Shopping Cart" role="region" aria-hidden="true">
+  <!-- 抽屉顶部 -->
+  <div class="cart-drawer-header">
+    <span>🛒 Your Cart</span>
+    <button class="close-btn" id="closeDrawer" aria-label="Close Cart Drawer">×</button>
+  </div>
+
+  <!-- 抽屉内容主体 -->
+  <div class="cart-drawer-body">
+    <p class="checkout-hint">🔥 197 people are checking out now</p>
+
+    <!-- 商品渲染区域（由 JS 插入） -->
+    <div id="drawerCartItems"></div>
+
+    <!-- 动态价格汇总 -->
+    <div class="cart-summary" id="drawerCartSummary"></div>
+
+    <p class="small text-secondary mt-3" style="color:#777;">
+      Taxes and discount codes calculated at checkout.
+    </p>
+  </div>
+
+  <!-- 抽屉底部 -->
+  <div class="cart-drawer-footer">
+    <a href="#" target="_blank" id="drawerCheckout" class="btn btn-checkout" role="button" aria-label="Proceed to Checkout">Proceed to Checkout →</a>
+  </div>
+</div>
+
+  </body>  
+
+
+<!-- ====================== -->
+<!-- ③ JavaScript 脚本区域 -->
+<!-- ====================== -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  // ① 缓存页面中常用的 DOM 元素，避免重复查找
+  const addToCartBtn = document.getElementById('addToCartBtn');          // “添加到购物车”按钮
+  const variantSelect = document.getElementById('variantSelect');        // 商品规格下拉框
+  const quantityInput = document.getElementById('quantityInput');        // 数量输入框
+  const messageEl = document.getElementById('message');                  // 页面顶部提示信息显示区域
+
+  const drawer = document.getElementById('cartDrawer');                  // 购物车抽屉容器
+  const drawerItems = document.getElementById('drawerCartItems');        // 商品渲染区域（JS 动态插入）
+  const drawerSummary = document.getElementById('drawerCartSummary');    // 价格汇总区域（JS 动态插入）
+  const drawerCheckout = document.getElementById('drawerCheckout');      // “前往结账”按钮
+  const closeDrawer = document.getElementById('closeDrawer');            // 关闭抽屉按钮
+
+  // ② 消息提示清除计时器句柄
+  let clearMsgTimeout = null;
+
+  // ③ 显示提示信息（支持 success、error、info 类型）
+  function showMessage(text, type = 'success', duration = 4000) {
+    const colors = {
+      success: '#28a745',   // 绿色
+      error: '#dc3545',     // 红色
+      info: '#0d6efd'       // 蓝色
+    };
+
+    if (clearMsgTimeout) {
+      clearTimeout(clearMsgTimeout);
+      clearMsgTimeout = null;
+    }
+
+    messageEl.textContent = text;
+    messageEl.style.color = colors[type] || '#000';
+
+    if (type === 'success' || type === 'error') {
+      clearMsgTimeout = setTimeout(() => {
+        messageEl.textContent = '';
+        clearMsgTimeout = null;
+      }, duration);
+    }
+  }
+
+  // ④ 渲染购物车内容，包括商品列表和价格小计
+  function renderCart(cart) {
+    // 清空之前的商品和价格内容
+    drawerItems.innerHTML = '';
+    drawerSummary.innerHTML = '';
+
+    // 渲染商品列表
+    cart.lines?.edges?.forEach(({ node }) => {
+      const variantId = node.merchandise?.id;
+      const quantity = node.quantity;
+
+      // 根据 variantId 找到对应 option 标签的文字，作为颜色描述
+      const optionEl = [...variantSelect.options].find(opt => opt.value === variantId);
+      const colorLabel = optionEl ? optionEl.textContent : 'Selected Variant';
+
+      // 创建并插入商品元素
+      const item = document.createElement('div');
+      item.className = 'cart-item';
+      item.style.marginBottom = '10px';
+      item.innerHTML = `
+        <div style="font-weight: bold;">Color: ${colorLabel}</div>
+        <div style="font-size: 14px; color: #555;">Quantity: ${quantity}</div>
+      `;
+      drawerItems.appendChild(item);
+    });
+
+    // 渲染价格汇总（小计 + 运费 + 总计）
+    if (cart.cost) {
+      const subtotal = cart.cost.subtotalAmount?.amount || '0.00';
+      const total = cart.cost.totalAmount?.amount || '0.00';
+      const currency = cart.cost.subtotalAmount?.currencyCode || '$';
+
+      const summary = document.createElement('div');
+      summary.className = 'cart-summary mt-3';
+      summary.innerHTML = `
+        <div class="summary-row">
+          <span>Subtotal</span>
+          <span>${currency} ${parseFloat(subtotal).toFixed(2)}</span>
+        </div>
+        <div class="summary-row">
+          <span>Shipping</span>
+          <span>Free</span>
+        </div>
+        <div class="summary-row total" style="font-weight:bold;">
+          <span>Total</span>
+          <span>${currency} ${parseFloat(total).toFixed(2)}</span>
+        </div>
+      `;
+
+      // ✅ 正确插入价格汇总区域（这里必须是 drawerSummary，不要误插入 drawerItems）
+      drawerSummary.appendChild(summary);
+    }
+
+    // 设置结账链接地址
+    drawerCheckout.href = cart.checkoutUrl || '#';
+
+    // 打开购物车抽屉，并更新 aria 属性
+    drawer.classList.add('open');
+    drawer.setAttribute('aria-hidden', 'false');
+  }
+
+  // ⑤ “添加到购物车” 按钮点击事件
+  addToCartBtn?.addEventListener('click', async () => {
+    const merchandiseId = variantSelect.value;
+    let quantity = parseInt(quantityInput.value, 10);
+    if (isNaN(quantity) || quantity <= 0) quantity = 1;
+
+    showMessage('⏳ 正在添加到购物车，请稍候...', 'info');
+    addToCartBtn.disabled = true;
+
+    try {
+      const response = await fetch('https://my-netlify-pro.netlify.app/.netlify/functions/add-to-cart', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ merchandiseId, quantity })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.cart) {
+        showMessage('❌ 添加失败: ' + (data?.error || '未知错误'), 'error');
+        return;
+      }
+
+      renderCart(data.cart); // ✅ 渲染购物车和价格
+      showMessage('✅ 已成功加入购物车！', 'success', 2500);
+    } catch (error) {
+      console.error(error);
+      showMessage('❌ 网络错误，请稍后重试', 'error');
+    } finally {
+      addToCartBtn.disabled = false;
+    }
+  });
+
+  // ⑥ 关闭购物车抽屉事件绑定
+  closeDrawer?.addEventListener('click', () => {
+    drawer.classList.remove('open');
+    drawer.setAttribute('aria-hidden', 'true');
+  });
+</script>
+
+</html>   
