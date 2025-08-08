@@ -1102,6 +1102,14 @@ tbody td:last-child {
 }
 
 
+  /* 手机端仅在小屏幕生效的样式 */
+  @media (max-width: 640px) {
+    .table-responsive {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch; /* 更流畅的滑动体验 */
+    }
+  }
+
   </style>
 </head>
 <body>
@@ -1153,6 +1161,9 @@ tbody td:last-child {
   <hr class="my-6" />
 
   <h2 class="text-2xl font-bold mb-4">🧠 一、什么是“人治” vs “系统管理”？</h2>
+
+  <!-- ✅ 表格加上外层容器 -->
+<div class="table-responsive mb-6"> 
   <table class="w-full text-left border-collapse mb-6">
     <thead>
       <tr class="bg-gray-100">
@@ -1188,7 +1199,8 @@ tbody td:last-child {
         <td class="border px-4 py-2">可复制、可规模化</td>
       </tr>
     </tbody>
-  </table>
+  </table> 
+  </div> 
 
   <hr class="my-6" />
 
@@ -1230,7 +1242,9 @@ tbody td:last-child {
   <hr class="my-6" />
 
   <h2 class="text-2xl font-bold mb-4">🧭 五、真正的转型是“组织操作系统”的升级</h2>
-  <p>你现在搭建的系统，已经具备了从“建站工具” → “企业操作系统（Enterprise Operating System）”过渡的能力：</p>
+  <p>你现在搭建的系统，已经具备了从“建站工具” → “企业操作系统（Enterprise Operating System）”过渡的能力：</p> 
+    <!-- ✅ 表格加上外层容器 -->
+<div class="table-responsive mb-6">  
   <table class="w-full text-left border-collapse mb-6">
     <thead>
       <tr class="bg-gray-100">
@@ -1261,7 +1275,8 @@ tbody td:last-child {
         <td class="border px-4 py-2">提升效率、降低成本、沉淀知识</td>
       </tr>
     </tbody>
-  </table>
+  </table> 
+  </div> 
 
   <hr class="my-6" />
 
@@ -1277,7 +1292,11 @@ tbody td:last-child {
   </ul>
   <p>而大多数传统企业甚至还停留在 L1-L2 模板 + 人治 的阶段，随着数字化鸿沟不断扩大，<strong>被淘汰只是时间问题</strong>。</p>
 
-<p class="mb-4"><strong>现实对比：</strong>目前真正达到 L3+ 级别系统能力的企业，其实只是极少数。</p>
+<p class="mb-4"><strong>现实对比：</strong>目前真正达到 L3+ 级别系统能力的企业，其实只是极少数。</p> 
+
+
+<!-- ✅ 外层容器：为表格提供滚动能力 -->
+<div class="table-responsive mb-6">  
 
 <table class="w-full text-left border-collapse my-6">
   <thead>
@@ -1309,7 +1328,8 @@ tbody td:last-child {
       <td class="border px-4 py-2">不足 2%</td>
     </tr>
   </tbody>
-</table>
+</table> 
+</div> 
 
   <hr class="my-6" />
 
@@ -1319,7 +1339,7 @@ tbody td:last-child {
       需要多长时间？</strong>
   </p>
 
-</div>
+</div> 
 
   <p>这是个非常尖锐但又极为现实的问题：</p> 
   <blockquote className="border-l-4 border-blue-500 pl-4 italic mb-6 bg-blue-50 p-4">
@@ -1333,7 +1353,10 @@ tbody td:last-child {
   <section className="max-w-4xl mx-auto p-6 bg-white rounded-md shadow-md">
     <h2 className="text-2xl font-bold mb-4">🕰️ 六、总体趋势：大部分“人治型企业”将在<strong>5–10 年内显著边缘化</strong></h2>
 
-    <p>这个区间是基于以下事实判断的：</p>
+    <p>这个区间是基于以下事实判断的：</p> 
+
+    <!-- ✅ 外层容器：为表格提供滚动能力 -->
+<div class="table-responsive mb-6">   
 
     <table className="table-auto w-full mb-6 border border-gray-300">
       <thead>
@@ -1370,8 +1393,9 @@ tbody td:last-child {
           <td className="border border-gray-300 px-4 py-2">核心领域替代率将在 3–7 年内大爆发</td>
         </tr>
       </tbody>
-    </table>
-  </section>
+    </table> 
+    </div>  
+  </section> 
 
   <hr className="my-8" />
 
@@ -1415,7 +1439,7 @@ tbody td:last-child {
     <ul className="list-disc list-inside mb-4">
       <li><strong>❌ 人治失败案例：</strong>
         <ul className="list-disc list-inside ml-6">
-          <li>某传统家族企业仍靠“老板拍板 + 人情沟通”，结果人才留不住、业务转型迟缓，最终被一个使用低代码系统的10人初创团队替代；</li>
+          <li>某传统家族企业仍靠“老板拍板 + 人情沟通”，结果人才留不住、业务转型迟缓，最终被一个使用代码系统的10人初创团队替代；</li>
         </ul>
       </li>
       <li><strong>✅ 系统化成功案例：</strong>
@@ -1430,6 +1454,9 @@ tbody td:last-child {
 
   <section className="max-w-4xl mx-auto p-6 bg-white rounded-md shadow-md">
     <h2 className="text-2xl font-bold mb-4">⏳ 九、简化结论时间线</h2>
+
+        <!-- ✅ 外层容器：为表格提供滚动能力 -->
+<div class="table-responsive mb-6">   
 
     <table className="table-auto w-full border border-gray-300">
       <thead>
@@ -1456,7 +1483,8 @@ tbody td:last-child {
           <td className="border border-gray-300 px-4 py-2"><strong>大批人治企业将退出市场，或被并购/收购</strong></td>
         </tr>
       </tbody>
-    </table>
+    </table> 
+        </div>  
   </section>
 
   <hr className="my-8" />
