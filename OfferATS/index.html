@@ -2,149 +2,105 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>人才合作自动化系统</title>
+  <title>Zapier 测试提交页面</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      padding: 2rem;
-      max-width: 700px;
-      margin: auto;
-      background: #f9f9f9;
+      max-width: 480px;
+      margin: 40px auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
     }
-
-    h1 {
-      color: #333;
-    }
-
     label {
       display: block;
-      margin-top: 1rem;
+      margin-top: 15px;
       font-weight: bold;
     }
-
-    input, textarea, select, button {
+    input, textarea {
       width: 100%;
-      padding: 0.6rem;
-      margin-top: 0.5rem;
+      padding: 8px;
+      margin-top: 4px;
       box-sizing: border-box;
     }
-
     button {
-      margin-top: 1rem;
-      cursor: pointer;
-    }
-
-    .primary {
-      background: #007bff;
+      margin-top: 20px;
+      padding: 10px 16px;
+      background-color: #0070f3;
       color: white;
       border: none;
+      cursor: pointer;
     }
-
-    .secondary {
-      background: #e0e0e0;
-      color: #333;
-      border: none;
+    #status {
+      margin-top: 20px;
+      font-weight: bold;
     }
-
-    .log {
-      margin-top: 1rem;
-      font-size: 0.95rem;
-      color: #333;
-      background: #fff;
-      padding: 1rem;
-      border-left: 4px solid #007bff;
-    }
-
-    .success { color: green; }
-    .error { color: red; }
   </style>
 </head>
-
 <body>
-  <h1>R winSaaS 招聘自动化前端</h1>
 
-  <!-- Email 验证区域 -->
-  <section>
-    <label for="email">候选人邮箱（必填）</label>
-    <input type="email" id="email" placeholder="例如: user@example.com" />
+  <h2>Zapier 写入 Notion 测试</h2>
 
-    <label for="jobTitle">岗位名称（选填）</label>
-    <input type="text" id="jobTitle" placeholder="例如：后端开发工程师" />
+  <label for="email">候选人邮箱</label>
+  <input type="email" id="email" placeholder="abc@example.com" required />
 
-    <label for="resume">简历或备注（选填）</label>
-    <textarea id="resume" rows="5" placeholder="简历内容或备注信息..."></textarea>
+  <label for="jobTitle">岗位名称</label>
+  <input type="text" id="jobTitle" placeholder="后端开发工程师" />
 
-    <label for="interviewTime">面试时间（选填）</label>
-    <input type="datetime-local" id="interviewTime" />
+  <label for="resume">简历或备注</label>
+  <textarea id="resume" rows="5" placeholder="简历内容..." ></textarea>
 
-    <button class="primary" onclick="triggerAction('verifyEmail')">📩 验证邮箱</button>
-    <button class="secondary" onclick="triggerAction('resendEmail')">🔁 重新发送验证邮件</button>
-    <button class="primary" onclick="triggerAction('saveCandidate')">💾 保存候选人</button>
-    <button class="secondary" onclick="triggerAction('callZapier')">🚀 手动触发 Zapier Webhook</button>
-    <button class="secondary" onclick="triggerAction('aiScreen')">🤖 AI 筛选简历</button>
-    <button class="secondary" onclick="triggerAction('scheduleInterview')">📅 安排面试</button>
-  </section>
+  <button onclick="submitToZapier()">提交到 Notion</button>
 
-  <!-- 状态输出 -->
-  <div id="status" class="log"></div>
+  <div id="status"></div>
 
   <script>
-    const endpoint = "https://my-netlify-hof.netlify.app/.netlify/functions/partner-connect"; // ← 修改为你部署的地址
+    async function submitToZapier() {
+      const email = document.getElementById('email').value.trim();
+      const jobTitle = document.getElementById('jobTitle').value.trim();
+      const resume = document.getElementById('resume').value.trim();
+      const status = document.getElementById('status');
 
-    async function triggerAction(action) {
-      const email = document.getElementById("email").value.trim();
-      const jobTitle = document.getElementById("jobTitle").value.trim();
-      const resume = document.getElementById("resume").value.trim();
-      const interviewTime = document.getElementById("interviewTime").value;
-
-      const status = document.getElementById("status");
-      status.textContent = "⏳ 处理中...";
-      status.className = 'log';
-
-      if (!email) {
-        status.textContent = "❌ 请填写邮箱";
-        status.classList.add('error');
+      if (!email || !email.includes('@')) {
+        status.textContent = '❌ 请填写有效的邮箱地址';
+        status.style.color = 'red';
         return;
       }
 
-      const payload = {
-        email,
-        jobTitle,
-        resume,
-        interviewTime,
-        action,
-      };
+      status.textContent = '⏳ 正在提交，请稍候...';
+      status.style.color = 'black';
 
       try {
-        const res = await fetch(endpoint, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
+        const res = await fetch('https://my-netlify-hof.netlify.app/.netlify/functions/partner-connect', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email,
+            jobTitle,
+            resume,
+            action: 'callZapier'
+          })
         });
 
         const result = await res.json();
 
         if (res.ok) {
-          status.textContent = `✅ [${action}] 成功：` + (result.message || JSON.stringify(result));
-          status.classList.add('success');
+          status.textContent = '✅ 成功调用 Zapier，检查 Notion 数据库';
+          status.style.color = 'green';
         } else {
-          status.textContent = `❌ [${action}] 失败：` + (result.error || JSON.stringify(result));
-          status.classList.add('error');
+          status.textContent = '❌ 错误：' + (result.error || '未知错误');
+          status.style.color = 'red';
         }
+
       } catch (err) {
-        status.textContent = `❌ 网络异常：${err.message}`;
-        status.classList.add('error');
+        console.error('网络异常:', err);
+        status.textContent = '❌ 网络异常，请稍后再试';
+        status.style.color = 'red';
       }
     }
-
-
-
-
-
-
-
   </script>
-  
+
 </body>
+
+
 </html> 
