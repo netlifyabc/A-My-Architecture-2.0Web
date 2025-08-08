@@ -100,19 +100,64 @@
 }
 
 
-        button.secondary {
-  background-color: #e2e8f0;     /* 稍深的灰蓝，视觉上有“重量” */
-  border: 1px solid #cbd5e0;     /* 和背景接近的边框，柔和不突兀 */
-  color: #2a4365;                /* 稍深的蓝灰色文字，清晰但不刺眼 */
+#candidate-profile label {
+  display: block;
+  margin-top: 8px;
+  font-weight: 600;
+  color: #333;
+}
+
+#candidate-profile input[type="email"],
+#candidate-profile input[type="text"],
+#candidate-profile textarea {
+  width: 100%;
+  padding: 8px 10px;
+  margin-top: 4px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-size: 14px;
+}
+
+#candidate-profile button {
+  padding: 8px 16px;
+  border-radius: 4px;
+  border: none;
   cursor: pointer;
+  margin-top: 12px;
+  color: white;
+}
+
+#candidate-profile button.primary {
+  background-color: #007bff;
+}
+
+#candidate-profile button.secondary {
+  background-color: #f5f1e9;   /* 奶油米色，温暖高级 */
+  color: #7a6f4f;              /* 深棕色文字，沉稳且易读 */
+  margin-left: 8px;
+  border: 1px solid #d9d2bf;  /* 柔和米色边框 */
   transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
-button.secondary:hover {
-  background-color: #cbd5e0;     /* 鼠标悬停时，稍微再深一点 */
-  border-color: #a0aec0;
+#candidate-profile button.secondary:hover {
+  background-color: #f0eadc;   /* 更浅更柔和的奶油色 */
+  border-color: #dcd5b8;       /* 浅米色边框 */
 }
 
+
+#candidate-profile button#callZapier {
+  background-color: #e6f0ff;    /* 很淡的高级蓝 */
+  color: #1a2a5a;               /* 深蓝色文字，清晰且稳重 */
+  margin-left: 8px;
+  border: 1px solid #a3b8ff;   /* 柔和蓝色边框 */
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+#candidate-profile button#callZapier:hover {
+  background-color: #d7e4ff;   /* 更浅更柔和的淡蓝 */
+  border-color: #a3b8ff;       /* 浅蓝色边框 */
+}
 
 
   </style>
@@ -135,7 +180,14 @@ button.secondary:hover {
   
   <!-- 邮箱输入：必填，用于身份确认 -->
 <label for="candidateEmail">候选人邮箱（必填）</label>
-<input type="email" id="candidateEmail" placeholder="输入候选人邮箱" required />
+<input type="email" id="candidateEmail" placeholder="输入候选人邮箱" required /> 
+
+  <!-- 新增岗位名称输入 -->
+  <label for="jobTitle" style="margin-top:12px;">岗位名称（必填）</label>
+  <input type="text" id="jobTitle" placeholder="输入岗位名称" required />
+
+  <!-- 新增 action 隐藏输入，默认值为 callZapier -->
+  <input type="hidden" id="action" value="callZapier" /> 
 
 <label for="resume">上传简历（可选）</label>
 <textarea id="resume" rows="6" placeholder="输入简历文本或备注"></textarea> 
@@ -619,11 +671,9 @@ verifyBtn.addEventListener('click', async () => {
   }
 });
 
-
-// 调用 Zapier Webhook
+// 调用后端接口，再由后端调用 Zapier Webhook
 document.getElementById('callZapier').addEventListener('click', async () => {
   const zapierStatus = document.getElementById('zapierStatus');
-
   const email = document.getElementById('candidateEmail')?.value.trim() || "";
   const jobTitle = document.getElementById('jobTitle')?.value.trim() || "";
 
@@ -633,42 +683,42 @@ document.getElementById('callZapier').addEventListener('click', async () => {
     return;
   }
 
- if (!jobTitle) {
-  appendLog("⚠️ 未填写岗位名称，继续调用 Zapier Webhook"); 
-}
+  // 岗位名称可以非必填，这里仅做提醒
+  if (!jobTitle) {
+    appendLog("⚠️ 未填写岗位名称，继续调用后端接口");
+  }
 
-
-  zapierStatus.textContent = "正在调用Zapier Webhook，请稍候...";
+  zapierStatus.textContent = "正在调用后端接口，请稍候...";
   zapierStatus.style.color = 'black';
 
   try {
-    // 这里你也可以用后端接口调用Zapier，这里直接用fetch调用Zapier URL
-    const webhookUrl = 'https://hooks.zapier.com/hooks/catch/24035737/u62a3uo/'; // 替换为你的Zapier Webhook地址
-
-    const response = await fetch(webhookUrl, {
+    const response = await fetch('https://my-netlify-hof.netlify.app/.netlify/functions/partner-connect', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         email,
         jobTitle,
-        timestamp: new Date().toISOString()
+        action: 'callZapier' // 让后端知道执行调用 Zapier 逻辑
       })
     });
 
+    const result = await response.json();
+
     if (response.ok) {
-      zapierStatus.textContent = "✅ 成功调用Zapier Webhook。";
+      zapierStatus.textContent = "✅ 成功调用后端，已触发 Zapier Webhook。";
       zapierStatus.style.color = 'green';
-      appendLog(`调用Zapier Webhook：email=${email}, jobTitle=${jobTitle}`);
+      appendLog(`调用后端接口触发 Zapier：email=${email}, jobTitle=${jobTitle}`);
     } else {
-      zapierStatus.textContent = `调用失败，状态码：${response.status}`;
+      zapierStatus.textContent = `调用失败：${result.error || response.statusText}`;
       zapierStatus.style.color = 'red';
     }
   } catch (error) {
-    zapierStatus.textContent = "调用Zapier时发生网络错误，请稍后重试。";
+    zapierStatus.textContent = "调用时发生网络错误，请稍后重试。";
     zapierStatus.style.color = 'red';
-    console.error('Zapier调用错误:', error);
+    console.error('调用错误:', error);
   }
 });
+
 
 </script>
 
