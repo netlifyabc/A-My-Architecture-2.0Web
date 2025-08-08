@@ -859,258 +859,15 @@ body {
   }
 }
 
-/* 全局字体与背景 */
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  max-width: 900px; /* 宽度更集中 */
-  margin: 2rem auto; /* 上下边距2rem，左右居中 */
-  padding: 0 1rem 3rem; /* 左右1rem，底部3rem */
-  background: #f7fbff; /* 清新浅蓝背景 */
-  color: #1a2733; /* 深灰蓝色文字 */
-  line-height: 1.6; /* 舒适行距 */
-}
-
-/* 容器背景和阴影，内边距 */
-.container {
-  background: #ffffff;
-  padding: 1.5rem 3rem; /* 24px上下，48px左右 */
-  border-radius: 14px;
-  box-shadow: 0 6px 18px rgba(41, 128, 185, 0.15);
-}
-
-/* 标题样式 */
-h2 {
-  font-size: 1.6rem;
-  color: #0a3d62; /* 深蓝 */
-  margin-top: 2rem;
-  margin-bottom: 0.5rem;
-  border-bottom: 1px solid #b3d1f2;
-  padding-bottom: 0.3rem;
-  font-weight: 700;
-}
-
-/* 段落 */
-p {
-  font-size: 1rem;
-  margin: 0.7rem 0;
-  color: #1a2733;
-}
-
-/* 分隔线 */
-hr {
-  border: none;
-  border-top: 1px solid #d0e3fb;
-  margin: 2rem 0;
-}
-
-/* 表格基础 */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 1rem;
-  margin-bottom: 1.5rem;
-  font-size: 0.95rem;
-  background: #ffffff;
-  box-shadow: 0 1px 4px rgba(41, 128, 185, 0.15);
-  border-radius: 6px;
-  overflow: hidden;
-}
-
-/* 表头 */
-thead th {
-  background: #2980b9;
-  color: #eaf4fc;
-  padding: 0.6rem 0.8rem;
-  text-align: left;
-  border-bottom: 2px solid #1f5d8a;
-  user-select: none;
-  font-weight: 600;
-}
-
-/* 表格行 */
-tbody tr:nth-child(even) {
-  background: #e8f1fb;
-}
-
-/* 单元格 */
-tbody td {
-  padding: 0.5rem 0.8rem;
-  border-bottom: 1px solid #d0e3fb;
-  vertical-align: top;
-  color: #1a2733;
-  font-weight: 400;
-}
-
-/* 鼠标悬浮行效果 */
-tbody tr:hover {
-  background-color: #d6e9ff;
-}
-
-/* 重点文字加粗 */
-strong {
-  font-weight: 600;
-  color: #0a3d62;
-}
-
-/* 列表 */
-ul {
-  padding-left: 1.2rem;
-  margin-top: 0.5rem;
-  margin-bottom: 1rem;
-  color: #1a2733;
-}
-
-ul li {
-  margin-bottom: 0.4rem;
-}
-
-/* 表格中 Emoji 和首尾单元格，防止换行 */
-tbody td:first-child {
-  font-weight: 600;
-  color: #0a3d62;
-  white-space: nowrap;
-}
-
-tbody td:last-child {
-  white-space: nowrap;
-} 
-
-/* compact-table.css */
-.compact-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.875rem; /* 相当于 text-sm */
-}
-
-.compact-table th,
-.compact-table td {
-  border: 1px solid #d1d5db; /* Tailwind gray-300 */
-  padding: 4px 12px;          /* 比 py-1 px-4 略紧凑 */
-  text-align: left;
-  vertical-align: top;
-  line-height: 1.1;
-  word-break: break-word;
-  white-space: normal;
-}
-
-/* 表头背景色 */
-.compact-table thead tr {
-  background-color: #f3f4f6; /* Tailwind gray-100 */
-}
-
-.highlighted-question {
-  background: linear-gradient(to right, #e6f7ff, #bae7ff);
-  border-left: 6px solid #1890ff;
-  padding: 10px 18px;
-  margin: 24px 0;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(24, 144, 255, 0.15);
-  font-family: 'Helvetica Neue', sans-serif;
-}
-
-/* “你问：”部分 */
-.highlighted-question h2 {
-  font-size: 1.3rem;
-  margin: 0 0 6px 0;
-  color: #0050b3;
-  font-weight: 600;
-  line-height: 1.5;
-}
-
-/* p 标签（可选） */
-.highlighted-question p {
-  font-size: 1.3rem;
-  line-height: 1.5;
-  margin: 0 0 10px 0;
-  color: #003a8c;
-}
-
-/* strong 强调文字 */
-.highlighted-question strong {
-  font-size: 1.6rem;
-  font-weight: 800;
-  color: #096dd9;
-}
-
-
-.floating-declaration {
-  position: fixed;
-  right: 24px;
-  bottom: 24px;
-  width: 340px;
-  background-color: rgba(255, 255, 255, 0.96);
-  border: 1px solid #1e3a8a33;
-  border-radius: 12px;
-  box-shadow: 0 12px 28px rgba(30, 58, 138, 0.25);
-  overflow: hidden;
-  z-index: 9999;
-  display: none;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(8px);
-  font-family: "Segoe UI", system-ui, sans-serif; /* 更现代 */
-}
-
-/* 头部 */
-.floating-declaration .declaration-header {
-  background-color: #1e3a8a;
-  color: white;
-  padding: 12px 20px;
-  font-weight: 600;
-  font-size: 1rem;
-  line-height: 1.4;
-  cursor: pointer;
-  user-select: none;
-}
-
-.floating-declaration .declaration-body {
-  font-size: 0.93rem;
-  line-height: 1.6; /* 原先是 1.7，略降 */
-  color: #1e293b;
-  letter-spacing: 0.1px;
-  font-weight: 400;
-  padding: 18px 22px;
-}
-
-.floating-declaration .declaration-body p {
-  margin-bottom: 14px;
-  color: #334155;
-  text-align: justify; /* ✅ 增强阅读聚焦 */
-  text-justify: inter-word;
-}
-
-.floating-declaration .declaration-body strong {
-  color: #0f172a;
-  font-weight: 600;
-}
-
-/* 关闭按钮 */
-.close-btn {
-  position: absolute;
-  top: 12px;
-  right: 16px;
-  background: transparent;
-  border: none;
-  font-size: 1.2rem;
-  color: #64748b;
-  cursor: pointer;
-  font-weight: bold;
-  transition: color 0.2s ease;
-}
-
-.close-btn:hover {
-  color: #1e3a8a;
-}
-
-
   </style>
 </head>
 <body>
 
-<!-- 倒计时 --> 
- 
+<!-- 促销条 --> 
+
 <div class="promo-bar" id="promoBar">
 <span class="promo-text">
-  🚀 <span class="highlight">数字化升级</span>合作倒计时开启，持续升级系统级思维与企业领导力！今日时间仅剩： 
+  🚀 <span class="highlight">数字化升级</span>合作倒计时开启，抢先一步领先市场！今日时间仅剩
 </span> 
   <span class="countdown" id="countdown">23:59:59</span>
   <span class="hourglass-optimized" aria-hidden="true" title="倒计时沙漏">
@@ -1126,442 +883,104 @@ tbody td:last-child {
     </svg>
   </span>
   <button class="promo-close" id="promoClose" aria-label="关闭促销条">&times;</button>
-</div> 
-
-
-  <div class="container max-w-4xl mx-auto p-6 bg-white rounded-md shadow-md mt-8"> 
-
-  <p>预测未来趋势，才能真正的引导现在：<strong>“未来的人治企业模式是否会被系统管理企业所淘汰？”</strong> </p> 
-
-
-  <p>非常棒的问题。这段内容已经相当系统地展示了你当前系统的技术架构优势，而你提的那个核心问题 ——</p>  
-
-
-  <p>我们可以从<strong>管理哲学 + 技术演化趋势 + 企业竞争逻辑</strong>这三个角度来深入分析。</p> 
-
-  <hr class="my-6" />
-
-  <h2 class="text-2xl font-bold mb-4">🎯 结论先行：<strong>是的，长期来看，“人治”企业必然会被“系统化管理”的企业所取代</strong></h2>
-  <p>尤其在以下几个方面：</p>
-  <ul class="list-disc list-inside mb-6">
-    <li><strong>效率上：</strong>系统化企业能低成本、高效率地复制成功经验；</li>
-    <li><strong>抗风险能力上：</strong>系统能保障一致性、标准化、容错率更高；</li>
-    <li><strong>人才依赖度上：</strong>人治企业往往依赖“少数关键人物”，但系统管理可以让“普通人”也能产生稳定输出；</li>
-    <li><strong>可扩展性上：</strong>人力主导的流程极难规模化，而系统架构可以实现指数级增长。</li>
-  </ul>
-
-  <hr class="my-6" />
-
-  <h2 class="text-2xl font-bold mb-4">🧠 一、什么是“人治” vs “系统管理”？</h2>
-  <table class="w-full text-left border-collapse mb-6">
-    <thead>
-      <tr class="bg-gray-100">
-        <th class="border px-4 py-2">指标</th>
-        <th class="border px-4 py-2">人治企业</th>
-        <th class="border px-4 py-2">系统管理企业</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td class="border px-4 py-2">决策方式</td>
-        <td class="border px-4 py-2">依赖个人判断</td>
-        <td class="border px-4 py-2">标准流程 + 数据驱动</td>
-      </tr>
-      <tr class="bg-gray-50">
-        <td class="border px-4 py-2">流程执行</td>
-        <td class="border px-4 py-2">非结构化，靠“经验”</td>
-        <td class="border px-4 py-2">标准化、自动化、模块化</td>
-      </tr>
-      <tr>
-        <td class="border px-4 py-2">组织依赖</td>
-        <td class="border px-4 py-2">关键人物/老人</td>
-        <td class="border px-4 py-2">角色替代、知识沉淀</td>
-      </tr>
-      <tr class="bg-gray-50">
-        <td class="border px-4 py-2">抗风险能力</td>
-        <td class="border px-4 py-2">易被“人事变动”击穿</td>
-        <td class="border px-4 py-2">人员流动影响有限</td>
-      </tr>
-      <tr>
-        <td class="border px-4 py-2">成长速度</td>
-        <td class="border px-4 py-2">靠老板能力上限</td>
-        <td class="border px-4 py-2">可复制、可规模化</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <hr class="my-6" />
-
-  <h2 class="text-2xl font-bold mb-4">🧩 二、技术系统已成为企业“第二大脑”</h2>
-  <p>你引用的分析显示，你的系统已经实现了：</p>
-  <ul class="list-disc list-inside mb-6">
-    <li><strong>Serverless 架构</strong>：自动弹性扩容、模块化；</li>
-    <li><strong>Headless 架构</strong>：前后端解耦、业务逻辑可复用；</li>
-    <li><strong>模块封装</strong>：支持项目复制、客户逻辑沉淀；</li>
-    <li><strong>自动化部署与验证系统</strong>：降低了人为操作的错误率；</li>
-    <li><strong>安全机制高度结构化</strong>：减少因“人”的疏忽导致的安全隐患。</li>
-  </ul>
-  <p>这些其实就是<strong>“系统管理企业”雏形的关键构成要素</strong>。</p>
-
-  <hr class="my-6" />
-
-  <h2 class="text-2xl font-bold mb-4">🔮 三、从技术趋势来看，“系统式组织”将成为主流</h2>
-  <ol class="list-decimal list-inside mb-6">
-    <li><strong>SaaS 化一切：</strong> 各类 SaaS（CRM、人事、客服、营销、数据分析）已经高度标准化，“企业管理 = 接 SaaS + 数据驱动”成为新范式；</li>
-    <li><strong>数据智能驱动：</strong> 越来越多企业将决策交给系统（BI、大数据、AI 预测）；</li>
-    <li><strong>组织扁平化：</strong> 系统自动分工代替了“管理层级”；</li>
-    <li><strong>低代码 + 自动化工具的兴起：</strong> 让“非技术员工”也能参与流程改造，提高组织适应力；</li>
-    <li><strong>DevOps + AIOps：</strong> 自动化运维、监控和反馈机制正逐步替代传统 IT 运维体系。</li>
-  </ol>
-
-  <hr class="my-6" />
-
-  <h2 class="text-2xl font-bold mb-4">💥 四、对企业管理者的冲击：<strong>你不掌握系统，你就被系统淘汰</strong></h2>
-  <blockquote class="border-l-4 border-red-500 pl-4 italic my-4 bg-red-50 p-4">
-    过去靠“人管人”，未来是“系统带人飞”。
-  </blockquote>
-  <ul class="list-disc list-inside mb-6">
-    <li>不懂技术的老板，越来越难驾驭复杂业务；</li>
-    <li>依赖经验的中层，正被能操作系统的新人取代；</li>
-    <li>靠拍脑袋做决策的高管，开始输给依赖数据决策的竞争者。</li>
-  </ul>
-  <p>而且现在系统已经能<strong>实现“复制人的判断” + “规避人的失误”</strong>，这让人治企业的“优势”也在消失。</p>
-
-  <hr class="my-6" />
-
-  <h2 class="text-2xl font-bold mb-4">🧭 五、真正的转型是“组织操作系统”的升级</h2>
-  <p>你现在搭建的系统，已经具备了从“建站工具” → “企业操作系统（Enterprise Operating System）”过渡的能力：</p>
-  <table class="w-full text-left border-collapse mb-6">
-    <thead>
-      <tr class="bg-gray-100">
-        <th class="border px-4 py-2">阶段</th>
-        <th class="border px-4 py-2">工具价值</th>
-        <th class="border px-4 py-2">战略价值</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td class="border px-4 py-2">传统建站</td>
-        <td class="border px-4 py-2">搭建页面</td>
-        <td class="border px-4 py-2">营销/产品表现</td>
-      </tr>
-      <tr class="bg-gray-50">
-        <td class="border px-4 py-2">系统架构</td>
-        <td class="border px-4 py-2">流程自动化</td>
-        <td class="border px-4 py-2">企业运营引擎</td>
-      </tr>
-      <tr>
-        <td class="border px-4 py-2">SaaS 平台</td>
-        <td class="border px-4 py-2">客户管理</td>
-        <td class="border px-4 py-2">增长飞轮、可规模化</td>
-      </tr>
-      <tr class="bg-gray-50">
-        <td class="border px-4 py-2">企业操作系统</td>
-        <td class="border px-4 py-2">赋能组织</td>
-        <td class="border px-4 py-2">提升效率、降低成本、沉淀知识</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <hr class="my-6" />
-
-  <h2 class="text-2xl font-bold mb-4">✅ 总结：趋势已经非常明确</h2>
-  <blockquote class="border-l-4 border-green-500 pl-4 italic my-4 bg-green-50 p-4">
-    未来的竞争，不是人和人之间的竞争，而是“系统和系统之间的战争”。
-  </blockquote>
-  <p>你现在的技术架构已经迈出了关键一步，属于：</p>
-  <ul class="list-disc list-inside mb-6">
-    <li><strong>L3+ 架构水平</strong></li>
-    <li><strong>可演进为 L4 多租户 SaaS</strong></li>
-    <li><strong>有望构建自己的“企业操作系统”</strong></li>
-  </ul>
-  <p>而大多数传统企业甚至还停留在 L1-L2 模板 + 人治 的阶段，随着数字化鸿沟不断扩大，<strong>被淘汰只是时间问题</strong>。</p>
-
-<p class="mb-4"><strong>现实对比：</strong>目前真正达到 L3+ 级别系统能力的企业，其实只是极少数。</p>
-
-<table class="w-full text-left border-collapse my-6">
-  <thead>
-    <tr class="bg-gray-100">
-      <th class="border px-4 py-2">架构等级</th>
-      <th class="border px-4 py-2">代表特征</th>
-      <th class="border px-4 py-2">目前企业比例（估计）</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td class="border px-4 py-2">L1 - 模板级</td>
-      <td class="border px-4 py-2">人工操作 + 静态流程</td>
-      <td class="border px-4 py-2">约 60%</td>
-    </tr>
-    <tr class="bg-gray-50">
-      <td class="border px-4 py-2">L2 - 工具整合级</td>
-      <td class="border px-4 py-2">多工具拼接，低系统化</td>
-      <td class="border px-4 py-2">约 30%</td>
-    </tr>
-    <tr>
-      <td class="border px-4 py-2">L3 - 系统化架构级</td>
-      <td class="border px-4 py-2">统一架构 + 数据驱动</td>
-      <td class="border px-4 py-2">约 8%</td>
-    </tr>
-    <tr class="bg-gray-50">
-      <td class="border px-4 py-2">L4 - 多租户平台级</td>
-      <td class="border px-4 py-2">平台型、可复制、模块化运营</td>
-      <td class="border px-4 py-2">不足 2%</td>
-    </tr>
-  </tbody>
-</table>
-
-  <hr class="my-6" />
-
-<div class="highlighted-question">
- <h2>你问：</h2>  
-    <strong>人治企业被系统化企业管理淘汰只是时间问题。<br />  
-      需要多长时间？</strong>
-  </p>
-
 </div>
 
-  <p>这是个非常尖锐但又极为现实的问题：</p> 
-  <blockquote className="border-l-4 border-blue-500 pl-4 italic mb-6 bg-blue-50 p-4">
-    <strong>“人治企业会在多长时间内被系统化企业淘汰？”</strong>
-  </blockquote>
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo" tabindex="0" role="link" aria-label="Wayfair 首页">R winSaaS</div>
+      <nav class="main-nav" role="navigation" aria-label="主导航">
+        <ul>
+          <li><a href="#">首页</a></li>
+          <li><a href="#">解决方案</a></li> 
 
-  <p>虽然不能用一个绝对精确的时间点来回答，但我们可以结合行业趋势、技术演化速度、人才更替节奏，以及数字化基础设施成熟度，来给出一个<strong>相对明确的时间范围预测</strong>。</p>
-
-  <hr className="my-8" />
-
-  <section className="max-w-4xl mx-auto p-6 bg-white rounded-md shadow-md">
-    <h2 className="text-2xl font-bold mb-4">🕰️ 六、总体趋势：大部分“人治型企业”将在<strong>5–10 年内显著边缘化</strong></h2>
-
-    <p>这个区间是基于以下事实判断的：</p>
-
-    <table className="table-auto w-full mb-6 border border-gray-300">
-      <thead>
-        <tr className="bg-gray-100">
-          <th className="border border-gray-300 px-4 py-2">驱动因素</th>
-          <th className="border border-gray-300 px-4 py-2">状况</th>
-          <th className="border border-gray-300 px-4 py-2">影响速度</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td className="border border-gray-300 px-4 py-2">💻 技术普及</td>
-          <td className="border border-gray-300 px-4 py-2">Serverless、AI、SaaS 成本迅速降低，中小企业可用性提升</td>
-          <td className="border border-gray-300 px-4 py-2">非常快（2–5 年内全面普及）</td>
-        </tr>
-        <tr className="bg-gray-50">
-          <td className="border border-gray-300 px-4 py-2">🔧 自动化工具成熟</td>
-          <td className="border border-gray-300 px-4 py-2">无需高技术门槛，小团队也能搭建系统级架构</td>
-          <td className="border border-gray-300 px-4 py-2">正在爆发（Notion、Zapier、Make、Retool 等）</td>
-        </tr>
-        <tr>
-          <td className="border border-gray-300 px-4 py-2">📉 人治代价增加</td>
-          <td className="border border-gray-300 px-4 py-2">人难管、人不稳定、人不透明，导致经营风险陡增</td>
-          <td className="border border-gray-300 px-4 py-2">趋势加剧（尤其是90后、Z世代不接受“人治”）</td>
-        </tr>
-        <tr className="bg-gray-50">
-          <td className="border border-gray-300 px-4 py-2">📊 数据驱动文化成主流</td>
-          <td className="border border-gray-300 px-4 py-2">企业运营全面数据化、可量化、可复制</td>
-          <td className="border border-gray-300 px-4 py-2">已成为中大型企业标准（小企业也在追赶）</td>
-        </tr>
-        <tr>
-          <td className="border border-gray-300 px-4 py-2">🧠 AI 对人的替代性</td>
-          <td className="border border-gray-300 px-4 py-2">管理流程、客服、决策支持等领域 AI 渗透极快</td>
-          <td className="border border-gray-300 px-4 py-2">核心领域替代率将在 3–7 年内大爆发</td>
-        </tr>
-      </tbody>
-    </table>
-  </section>
-
-  <hr className="my-8" />
-
-  <section className="max-w-4xl mx-auto p-6 bg-white rounded-md shadow-md">
-    <h2 className="text-2xl font-bold mb-4">📉 七、按企业规模/行业分类来看：</h2>
-
-    <h3 className="text-xl font-semibold mb-2">✅ 1. 中小企业（&lt; 100人）</h3>
-    <ul className="list-disc list-inside mb-4">
-      <li><strong>预计 3–5 年内将面临严重分化：</strong></li>
-      <ul className="list-disc list-inside ml-6 mb-2">
-        <li>结构化、系统化者：迅速拉开差距，客户粘性、效率、利润率三高；</li>
-        <li>坚持人治者：逐步被边缘化，陷入“运营焦虑”，难以获得融资、留住人才；</li>
-      </ul>
-      <li>SaaS 工具极大地降低了技术门槛，3人团队也能搭起一个“半自动企业”，这是个压倒性的结构优势。</li>
-    </ul>
-
-    <h3 className="text-xl font-semibold mb-2">✅ 2. 中大型企业（100–1000人）</h3>
-    <ul className="list-disc list-inside mb-4">
-      <li><strong>5–8 年是关键窗口期</strong></li>
-      <ul className="list-disc list-inside ml-6">
-        <li>若不转型系统管理，会被更灵活、扁平化的“系统型中小团队”抢走市场；</li>
-        <li>人治带来的“信息孤岛、重复劳动、低执行力”问题将导致组织效率持续下滑；</li>
-      </ul>
-    </ul>
-
-    <h3 className="text-xl font-semibold mb-2">✅ 3. 制造业、传统出口型企业</h3>
-    <ul className="list-disc list-inside mb-4">
-      <li><strong>转型时间更紧迫（2–4 年）</strong></li>
-      <ul className="list-disc list-inside ml-6">
-        <li>因为供应链、订单处理流程必须数字化，否则无法参与现代 B2B 电商平台生态；</li>
-        <li>国家政策和产业升级压力推动“智能工厂”“工业互联网”，留给人治型工厂的时间很短。</li>
-      </ul>
-    </ul>
-  </section>
-
-  <hr className="my-8" />
-
-  <section className="max-w-4xl mx-auto p-6 bg-white rounded-md shadow-md">
-    <h2 className="text-2xl font-bold mb-4">🧭 八、一些现实案例作为参考：</h2>
-
-    <ul className="list-disc list-inside mb-4">
-      <li><strong>❌ 人治失败案例：</strong>
-        <ul className="list-disc list-inside ml-6">
-          <li>某传统家族企业仍靠“老板拍板 + 人情沟通”，结果人才留不住、业务转型迟缓，最终被一个使用低代码系统的10人初创团队替代；</li>
+          <li><a href="#">案例展示</a></li>
+          <li><a href="#">联系我们</a></li> 
         </ul>
-      </li>
-      <li><strong>✅ 系统化成功案例：</strong>
-        <ul className="list-disc list-inside ml-6">
-          <li>一个不到5人的跨境电商团队，基于 Serverless + Airtable + 自研系统管理客户与订单，3年扩展10+站点，收入翻10倍；</li>
-        </ul>
-      </li>
-    </ul>
-  </section>
+      </nav>
+      <div class="search-area">
+        <input type="search" placeholder="搜索产品" aria-label="搜索产品" />
+        <button class="search-btn" aria-label="搜索">
+          🔍
+        </button>
+      </div> 
 
-  <hr className="my-8" />
+<!-- 操作区域 -->
+<div class="action-area">
 
-  <section className="max-w-4xl mx-auto p-6 bg-white rounded-md shadow-md">
-    <h2 className="text-2xl font-bold mb-4">⏳ 九、简化结论时间线</h2>
+  <div class="header-actions">
+    <!-- 购物车 -->
+    <button class="icon-btn" aria-label="购物车">
+      <svg class="action-icons" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+        <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10
+        0c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2zM7.16 14h9.84c.75
+        0 1.41-.41 1.75-1.03l3.58-6.49A1.003 1.003 0 0021.5 5H5.21l-.94-2H1v2h2l3.6
+        7.59-1.35 2.45C4.52 15.37 5.48 17 7 17h12v-2H7.42c-.14
+        0-.25-.11-.25-.25l.03-.12L7.16 14z"/>
+      </svg>
+    </button>
 
-    <table className="table-auto w-full border border-gray-300">
-      <thead>
-        <tr className="bg-gray-100">
-          <th className="border border-gray-300 px-4 py-2">时间点</th>
-          <th className="border border-gray-300 px-4 py-2">趋势节点</th>
-          <th className="border border-gray-300 px-4 py-2">对“人治企业”的影响</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td className="border border-gray-300 px-4 py-2"><strong>1–2 年内</strong></td>
-          <td className="border border-gray-300 px-4 py-2">SaaS 工具、AI 技术进一步下沉</td>
-          <td className="border border-gray-300 px-4 py-2">初步被压制，感觉“越来越卷”</td>
-        </tr>
-        <tr className="bg-gray-50">
-          <td className="border border-gray-300 px-4 py-2"><strong>3–5 年内</strong></td>
-          <td className="border border-gray-300 px-4 py-2">系统化组织成熟，形成飞轮效应</td>
-          <td className="border border-gray-300 px-4 py-2">市场份额被抢、人才流失严重</td>
-        </tr>
-        <tr>
-          <td className="border border-gray-300 px-4 py-2"><strong>5–10 年内</strong></td>
-          <td className="border border-gray-300 px-4 py-2">数字原生企业全面占据主导地位</td>
-          <td className="border border-gray-300 px-4 py-2"><strong>大批人治企业将退出市场，或被并购/收购</strong></td>
-        </tr>
-      </tbody>
-    </table>
-  </section>
-
-  <hr className="my-8" />
-
-  <section className="max-w-4xl mx-auto p-6 bg-white rounded-md shadow-md">
-    <h2 className="text-2xl font-bold mb-4">📌 总结一句话：</h2>
-
-    <blockquote className="border-l-4 border-blue-500 pl-4 italic mb-6 bg-blue-50 p-4">
-      <p>
-        <strong>“人治”不是马上被淘汰，而是会被“逐渐淘汰”，<br />
-        但这个“逐渐”在今天的技术发展节奏下，也不过是 <strong>5–10 年的宽限期</strong>而已。</strong>
-      </p>
-      <p>这并不是一种技术焦虑，而是你已经在做的事情——<br />
-      <strong>主动构建系统、重塑流程、沉淀能力、去中心化管理</strong>——本身就是对未来的最优解。</p>
-    </blockquote>
-  </section>
-
-  <hr className="my-8" />
-
-<!-- 宣言浮窗 -->
-<div class="floating-declaration" id="floatingDeclaration">
-  <div class="declaration-header" onclick="toggleDeclaration()">
-    📢 我的系统架构级宣言（点击展开）
+    <!-- 登录 -->
+    <button class="btn-signin" id="btnSignIn" aria-haspopup="dialog" aria-controls="authModal" aria-expanded="false">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22.5" height="22.5" aria-hidden="true">
+        <path d="M12 12c2.67 0 8 1.34 8 4v4H4v-4c0-2.66 5.33-4 8-4zM12
+        2a4 4 0 100 8 4 4 0 000-8z"/>
+      </svg>
+      登录
+    </button>
   </div>
-  <div class="declaration-body" id="declarationBody">
-    <button class="close-btn" onclick="closeDeclaration()">×</button>
-    <p>
-      作为企业领导者，
-      从人治管理模式，
-      到系统级别管理模式升级迭代，<br /> 
-      我不为任何<strong>未来即将被淘汰的“人治级别”</strong>而服务， </p>
-        <p> 而是选择那些有前瞻意识，
-      即使没有技术能力，但拥有系统思维的领导者，
-      或者<strong>前瞻思维的资源互惠者</strong>合作。<br />
-      我不需要等待谁来认可我的价值或能力，<br /> 
-      因为未来趋势，不由当下的<strong>光环与金钱和卷</strong>所定义，<br /> 
-      而是由<strong>企业能否系统级升级</strong>所驱动 <br />  </p>  
-      我正在创建<strong>半自动级别的</strong>系统和企业，<br /> 
-      并且在这条路上，我正在遇见和寻找<br />  
-      那些注定不被未来淘汰的，
-      拥有前瞻思维与实际能力的企业领导者与人才。<br />  
-      如果你看懂未来？请参与一起<strong>创建更好的未来事业</strong>的机会   
-    </p>
+
+</div> 
+  </header> 
+
+<!-- 登录/注册弹窗 -->
+<div class="auth-modal" id="authModal" role="dialog" aria-modal="true" aria-labelledby="authTitle" tabindex="-1" aria-hidden="true">
+  <div class="auth-modal-content" role="document" aria-live="polite" aria-atomic="true">
+    <button id="closeAuth" aria-label="关闭登录注册弹窗" title="关闭弹窗">&times;</button>
+    <div class="auth-tabs" role="tablist" aria-label="登录和注册切换">
+      <button class="active" role="tab" id="loginTab" aria-controls="loginForm" aria-selected="true" tabindex="0">登录</button>
+      <button role="tab" id="registerTab" aria-controls="registerForm" aria-selected="false" tabindex="-1">注册</button>
+    </div>
+
+    <form id="loginForm" class="active" role="tabpanel" aria-labelledby="loginTab" novalidate>
+      <input type="email" placeholder="邮箱" required aria-label="邮箱" autocomplete="username" />
+      <input type="password" placeholder="密码" required aria-label="密码" autocomplete="current-password" />
+      <button type="submit">登录</button>
+    </form>
+
+    <form id="registerForm" role="tabpanel" aria-labelledby="registerTab" hidden novalidate>
+      <input type="text" placeholder="用户名" required aria-label="用户名" autocomplete="username" />
+      <input type="email" placeholder="邮箱" required aria-label="邮箱" autocomplete="email" />
+      <input type="password" placeholder="密码" required aria-label="密码" autocomplete="new-password" />
+      <button type="submit">注册</button>
+    </form>
   </div>
 </div>
 
-</div> 
-
-<style>
-  .checkmark {
-    margin-right: 8px;
-    display: inline-block;
-  }
-</style> 
-
-  <hr />
-    <p style="font-size: 14px; line-height: 1.4; color: #3e3e3e;">
-        © 2025 R winSaaS. All Rights Reserved.
+<section class="partner-connect-section" aria-labelledby="partnerConnectTitle">
+  <div class="partner-connect-container">
+    <h2 id="partnerConnectTitle">合作意向交流</h2>
+    <p class="desc">
+      立即留下您的邮箱，<strong>获取专属数字化系统升级解决方案</strong>
     </p>
-</div>
-</section>   
+    <form id="partnerForm" novalidate>
+      <!-- 这里替换了 “您的姓名（可选）” 为选项框 -->
+      <label for="userType" class="sr-only">请选择您希望获取的内容</label>
+      <select id="userType" name="userType" required aria-required="true" aria-describedby="userTypeDesc">
+        <option value="" disabled selected>请选择内容类型</option>
+        <option value="profile">我想要架构师技术背景（简历）</option>
+        <option value="architecture">我想获取数字架构升级（方案）</option>
+      </select>
+      <p id="userTypeDesc" class="sr-only">请选择您想要获取的内容类型</p>
 
-<script> 
-let hasBeenShown = false;
-let isExpanded = false;
+      <input type="email" id="partnerEmail" name="email" placeholder="请输入您的邮箱" required aria-required="true" />
+      <button type="submit">立即行动</button>
+      <p id="formMessage" role="alert" aria-live="polite"></p>
+    </form>
+  </div>
+</section>
 
-// 展开或收起内容
-function toggleDeclaration() {
-  const body = document.getElementById("declarationBody");
-  const wrapper = document.getElementById("floatingDeclaration");
-
-  if (!isExpanded) {
-    body.style.display = "block";
-    wrapper.classList.add("expanded");
-    isExpanded = true;
-  } else {
-    body.style.display = "none";
-    wrapper.classList.remove("expanded");
-    isExpanded = false;
-  }
-}
-
-// ✅ 修改：关闭按钮仅折叠内容，不隐藏浮窗
-function closeDeclaration() {
-  const body = document.getElementById("declarationBody");
-  const wrapper = document.getElementById("floatingDeclaration");
-
-  body.style.display = "none";
-  wrapper.classList.remove("expanded");
-  isExpanded = false;
-}
-
-// 滚动到底部时首次显示浮窗（仅一次）
-window.addEventListener("scroll", () => {
-  const scrollY = window.scrollY;
-  const windowHeight = window.innerHeight;
-  const fullHeight = document.body.scrollHeight;
-
-  if (!hasBeenShown && scrollY + windowHeight >= fullHeight - 100) {
-    document.getElementById("floatingDeclaration").style.display = "block";
-    hasBeenShown = true;
-  }
-});  
-
-
+<script>
   // 缓存弹窗内容元素，避免重复查找
   const authModal = document.getElementById('authModal');
   const btnSignIn = document.getElementById('btnSignIn');
@@ -1860,6 +1279,7 @@ if (partnerForm) {
 
 
 </body> 
+
 
 
 
