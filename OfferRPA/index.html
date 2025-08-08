@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>招聘自动化系统管理面板</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    /* 基础样式 */
+    body {
+      margin: 0; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f7fa; color: #333;
+      display: flex; height: 100vh;
+    }
+    /* 侧边栏 */
+    nav {
+      width: 220px;
+      background: #004a9f;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      padding-top: 20px;
+    }
+    nav h2 {
+      margin: 0 0 20px 20px;
+      font-weight: 700;
+      font-size: 1.4rem;
+    }
+    nav button {
+      background: none;
+      border: none;
+      color: white;
+      padding: 15px 20px;
+      text-align: left;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border-left: 4px solid transparent;
+    }
+    nav button:hover, nav button.active {
+      background: #0063d1;
+      border-left: 4px solid #ffcc00;
+      font-weight: 700;
+    }
+    /* 内容区域 */
+    main {
+      flex-grow: 1;
+      padding: 30px;
+      overflow-y: auto;
+    }
+    main h1 {
+      margin-top: 0;
+      color: #004a9f;
+    }
+    section.module {
+      display: none;
+    }
+    section.module.active {
+      display: block;
+    }
+    /* 公共表单样式 */
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: 600;
+    }
+    input, select, textarea, button {
+      margin-top: 6px;
+      padding: 8px 12px;
+      width: 100%;
+      box-sizing: border-box;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+    button.primary {
+      background-color: #0078d4;
+      border: none;
+      color: white;
+      margin-top: 20px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button.primary:hover {
+      background-color: #005ea2;
+    }
+
+    /* 日志区域 */
+
+    #log {
+  margin-top: 40px;
+  background: #eaeef6;
+  border-radius: 6px;
+  padding: 10px 15px 5px 15px; /* 上下内边距调整，上面稍小，下面更小 */
+  max-height: 180px;
+  overflow-y: hidden;  /* 关闭滚动条 */
+  font-size: 0.9rem;
+  color: #555;
+  white-space: pre-wrap;
+  line-height: 1.4;     /* 可以调整行高，文字更紧凑 */
+}
+
+
+        button.secondary {
+  background-color: #e2e8f0;     /* 稍深的灰蓝，视觉上有“重量” */
+  border: 1px solid #cbd5e0;     /* 和背景接近的边框，柔和不突兀 */
+  color: #2a4365;                /* 稍深的蓝灰色文字，清晰但不刺眼 */
+  cursor: pointer;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+button.secondary:hover {
+  background-color: #cbd5e0;     /* 鼠标悬停时，稍微再深一点 */
+  border-color: #a0aec0;
+}
+
+
+
+  </style>
+</head>
+<body> 
+
+  <nav> 
+    <h2>招聘自动化系统</h2>
+
+    <button data-target="candidate-profile">候选人管理</button>
+    <button data-target="job-management">岗位管理</button>
+    <button data-target="interview-schedule">面试安排</button>
+    <button data-target="ai-screening">AI简历筛选</button>
+    <button data-target="statistics">统计分析</button> 
+      <button data-target="candidate-database">📚 人才资料库</button> <!-- ✅ 加这里 --> 
+  </nav>
+  <main>
+<section id="candidate-profile" class="module">
+  <h1>候选人资料管理</h1> 
+  
+  <!-- 邮箱输入：必填，用于身份确认 -->
+<label for="candidateEmail">候选人邮箱（必填）</label>
+<input type="email" id="candidateEmail" placeholder="输入候选人邮箱" required />
+
+<label for="resume">上传简历（可选）</label>
+<textarea id="resume" rows="6" placeholder="输入简历文本或备注"></textarea> 
+
+<!-- 两个分开的按钮 -->
+<button class="primary" id="verifyEmail">📩 验证邮箱</button>
+<button class="secondary" id="saveCandidate">💾 保存资料</button>
+
+<div id="candidateStatus" style="margin-top:12px;"></div>  
+
+<!-- 新增调用Zapier的按钮 -->
+<button id="callZapier" style="margin-top:10px;">调用Zapier Webhook</button>
+
+  <div id="candidateStatus" style="margin-top:10px; color:#333;"></div>
+  <div id="zapierStatus" style="margin-top:6px; color:#333;"></div> 
+
+
+</section> 
+
+
+<section id="job-management" class="module">
+  <h1>📝 招聘岗位管理</h1>
+  <label for="jobTitle">岗位名称</label>
+  <input type="text" id="jobTitle" placeholder="输入岗位名称" />
+  <label for="jobDesc">岗位描述</label>
+  <textarea id="jobDesc" rows="5" placeholder="输入岗位描述"></textarea>
+  <button class="primary" id="saveJob">保存岗位</button>
+  <div id="jobStatus" style="margin-top:12px;"></div>
+</section>
+
+<!-- 新增的发送验证邮件区块 -->
+<section id="email-verification" class="module">
+  <h1>📧 发送验证邮件</h1>
+  <label for="email">候选人邮箱（发送验证用）</label>
+  <input type="email" id="email" placeholder="输入候选人邮箱" />
+
+  <label for="jobType">岗位类型</label>
+  <select id="jobType">
+    <option value="技术岗">技术岗</option>
+    <option value="产品岗">产品岗</option>
+    <option value="运营岗">运营岗</option>
+  </select>
+
+  <button class="secondary" id="sendVerification">📧 发送验证邮件</button>
+  <div id="emailStatus" style="margin-top:12px;"></div>
+</section>
+
+<section id="interview-schedule" class="module">
+  <h1>📅 面试安排通知</h1>
+  <label for="interviewCandidate">候选人邮箱</label>
+  <input type="email" id="interviewCandidate" placeholder="输入候选人邮箱" />
+  <label for="interviewTime">面试时间</label>
+  <input type="datetime-local" id="interviewTime" />
+  <button class="primary" id="scheduleInterview">发送面试通知</button>
+  <div id="interviewStatus" style="margin-top:12px;"></div>
+</section>
+
+
+<section id="ai-screening" class="module">
+  <h1>🗃️ AI 简历筛选</h1>
+  <p>上传简历后系统将自动识别候选人信息，推荐适配岗位，并纳入人才资料库。</p>
+
+  <label for="aiEmail">候选人邮箱</label>
+  <input type="email" id="aiEmail" placeholder="输入候选人邮箱" />
+
+  <label for="aiResume">简历文本</label>
+  <textarea id="aiResume" rows="8" placeholder="粘贴简历或自我介绍"></textarea>
+
+  <button class="primary" id="runAiScreening">开始筛选</button>
+
+  <div id="aiStatus" style="margin-top:16px; font-weight:500;"></div>
+</section>
+
+<section id="statistics" class="module">
+  <h1>📊 统计分析</h1>
+  <p>系统关键数据统计报表展示区域，包含转化率、验证率、推荐点击率等。（数据仅为示例）</p>
+  <button class="primary" id="refreshStats">刷新统计数据</button>
+  <pre id="statsData" style="background:#eef2f7; padding:10px; border-radius:6px; margin-top:12px; min-height:150px; white-space:pre-wrap;">
+暂无数据
+  </pre>
+</section>
+
+
+    <section id="candidate-database" class="module">
+  <h1>📚 人才资料库</h1>
+  <table style="width:100%; border-collapse:collapse; margin-top:10px; border:1px solid #ccc;">
+    <thead style="background:#f0f3f8;">
+      <tr>
+        <th style="padding:10px; border-bottom:1px solid #ccc;">邮箱</th>
+        <th style="padding:10px; border-bottom:1px solid #ccc;">岗位意向</th>
+        <th style="padding:10px; border-bottom:1px solid #ccc;">简历概览</th>
+        <th style="padding:10px; border-bottom:1px solid #ccc;">验证状态</th>
+        <th style="padding:10px; border-bottom:1px solid #ccc;">面试时间</th>
+        <th style="padding:10px; border-bottom:1px solid #ccc;">推荐岗位</th>
+      </tr>
+    </thead>
+    <tbody id="candidateTable">
+      <tr>
+        <td colspan="6" style="text-align:center; color:#888; padding:20px;">
+          暂无候选人数据
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</section> 
+
+<!-- 在 </main> 前 或合适位置 添加日志面板 -->
+<div id="log" style="margin-top: 30px;">
+  <h2>🧾 操作日志</h2>
+  <pre id="logContent">暂无操作日志</pre>
+</div> 
+
+
+</main>
+
+
+  <script> 
+document.getElementById('statistics').classList.add('active');
+const candidateDB = [];
+
+const buttons = document.querySelectorAll('nav button');
+const modules = document.querySelectorAll('section.module');
+const logContent = document.getElementById('logContent');
+
+// 模块切换
+buttons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    buttons.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const target = btn.dataset.target;
+    modules.forEach(mod => {
+      mod.classList.toggle('active', mod.id === target);
+    });
+
+    if (target === 'candidate-database') {
+      renderCandidateTable();
+    }
+  });
+});
+
+function appendLog(text) {
+  const time = new Date().toLocaleTimeString();
+  if (logContent.textContent === "暂无操作日志") logContent.textContent = "";
+  logContent.textContent += `[${time}] ${text}\n`;
+  logContent.scrollTop = logContent.scrollHeight;
+}
+
+function renderCandidateTable() {
+  const tableBody = document.getElementById('candidateTable');
+
+  if (candidateDB.length === 0) {
+    tableBody.innerHTML = `
+      <tr>
+        <td colspan="6" style="text-align:center; color:#888; padding:20px;">
+          暂无候选人数据
+        </td>
+      </tr>`;
+    return;
+  }
+
+  let html = "";
+  candidateDB.forEach(c => {
+    html += `<tr>
+      <td>${c.email}</td>
+      <td>${c.jobIntent}</td>
+      <td>${c.resume.length > 20 ? c.resume.slice(0, 20) + "..." : c.resume}</td>
+      <td>${c.verified ? "✅ 已验证" : "❌ 未验证"}</td>
+      <td>${c.interview}</td>
+      <td>${c.aiRecommend}</td>
+    </tr>`;
+  });
+  tableBody.innerHTML = html;
+}
+
+// 统一调用后端接口函数
+async function callBackend(data) {
+  const url = 'https://your-backend-url/partner-connect'; // 替换成你的后端接口URL
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+      mode: 'cors'
+    });
+    const json = await res.json();
+    if (!res.ok) {
+      throw new Error(json.error || '服务器返回错误');
+    }
+    return json;
+  } catch (error) {
+    throw error;
+  }
+}
+
+// 发送验证邮件
+document.getElementById('sendVerification').addEventListener('click', async () => {
+  const email = document.getElementById('email').value.trim();
+  const jobType = document.getElementById('jobType').value;
+  const statusEl = document.getElementById('emailStatus');
+
+  if (!email) {
+    statusEl.textContent = "请填写有效的候选人邮箱。";
+    statusEl.style.color = 'red';
+    return;
+  }
+
+  statusEl.textContent = "发送中...";
+  statusEl.style.color = 'black';
+
+  try {
+    await callBackend({
+      email,
+      jobType,
+      action: 'sendEmail'
+    });
+    statusEl.textContent = `✅ 验证邮件已发送至 ${email}`;
+    statusEl.style.color = 'green';
+    appendLog(`发送验证邮件给 ${email}（岗位类型：${jobType}）`);
+  } catch (err) {
+    statusEl.textContent = err.message;
+    statusEl.style.color = 'red';
+  }
+});
+
+// AI简历筛选
+document.getElementById('runAiScreening').addEventListener('click', async () => {
+  const email = document.getElementById('aiEmail').value.trim();
+  const resume = document.getElementById('aiResume').value.trim();
+  const statusEl = document.getElementById('aiStatus');
+
+  if (!email || !resume) {
+    statusEl.textContent = "请填写候选人邮箱和简历文本。";
+    statusEl.style.color = 'red';
+    return;
+  }
+
+  statusEl.textContent = "正在分析简历并匹配岗位，请稍候...";
+  statusEl.style.color = 'black';
+
+  try {
+    const data = await callBackend({
+      email,
+      resume,
+      action: 'aiScreen'
+    });
+
+    const recommendedJob = data.recommendedJob || "产品经理 / 解决方案架构师（智能推荐）";
+
+    // 更新本地缓存
+    candidateDB.push({
+      email,
+      jobIntent: "AI推荐",
+      resume,
+      verified: true,
+      interview: "-",
+      aiRecommend: recommendedJob
+    });
+
+    statusEl.innerHTML = `
+      ✅ 筛选完成，推荐岗位：<strong>${recommendedJob}</strong><br />
+      已将候选人信息纳入人才资料库。
+    `;
+    statusEl.style.color = 'green';
+    appendLog(`AI筛选完成：${email} → 推荐【${recommendedJob}】`);
+    renderCandidateTable();
+  } catch (err) {
+    statusEl.textContent = err.message;
+    statusEl.style.color = 'red';
+  }
+});
+
+// 保存岗位
+document.getElementById('saveJob').addEventListener('click', async () => {
+  const title = document.getElementById('jobTitle').value.trim();
+  const desc = document.getElementById('jobDesc').value.trim();
+  const statusEl = document.getElementById('jobStatus');
+
+  if (!title) {
+    statusEl.textContent = "请填写岗位名称。";
+    statusEl.style.color = 'red';
+    return;
+  }
+
+  statusEl.textContent = "保存中...";
+  statusEl.style.color = 'black';
+
+  try {
+    await callBackend({
+      jobTitle: title,
+      jobDesc: desc,
+      action: 'saveJob'
+    });
+    statusEl.textContent = `✅ 岗位【${title}】信息已保存。`;
+    statusEl.style.color = 'green';
+    appendLog(`保存岗位信息：${title}`);
+  } catch (err) {
+    statusEl.textContent = err.message;
+    statusEl.style.color = 'red';
+  }
+});
+
+// 面试通知
+document.getElementById('scheduleInterview').addEventListener('click', async () => {
+  const email = document.getElementById('interviewCandidate').value.trim();
+  const time = document.getElementById('interviewTime').value;
+  const statusEl = document.getElementById('interviewStatus');
+
+  if (!email || !time) {
+    statusEl.textContent = "请填写候选人邮箱和面试时间。";
+    statusEl.style.color = 'red';
+    return;
+  }
+
+  statusEl.textContent = "发送中...";
+  statusEl.style.color = 'black';
+
+  try {
+    await callBackend({
+      email,
+      interviewTime: time,
+      action: 'scheduleInterview'
+    });
+
+    statusEl.textContent = `✅ 面试通知已发送给 ${email}，时间：${new Date(time).toLocaleString()}`;
+    statusEl.style.color = 'green';
+    appendLog(`面试通知：${email} 时间 ${new Date(time).toLocaleString()}`);
+
+    // 更新本地数据
+    const candidate = candidateDB.find(c => c.email === email);
+    if (candidate) {
+      candidate.interview = new Date(time).toLocaleString();
+      renderCandidateTable();
+    }
+  } catch (err) {
+    statusEl.textContent = err.message;
+    statusEl.style.color = 'red';
+  }
+});
+
+// 统计数据刷新（示例本地数据，没调用接口）
+document.getElementById('refreshStats').addEventListener('click', () => {
+  document.querySelectorAll('section.module').forEach(mod => {
+    mod.classList.remove('active');
+  });
+  document.getElementById('statistics').classList.add('active');
+
+  const statsEl = document.getElementById('statsData');
+  statsEl.textContent = "加载中...";
+  statsEl.style.color = 'black';
+
+  setTimeout(() => {
+    const exampleStats = {
+      "验证邮件发送数": 1200,
+      "邮箱验证通过率": "87%",
+      "有效候选人数": 1044,
+      "面试预约数": 350,
+      "面试出席率": "92%",
+      "AI岗位推荐点击数": 280,
+      "平均响应时间": "1.2 天",
+      "岗位转化率": "29%",
+      "候选人流失率": "13%",
+      "平均面试反馈时长": "2.5 天"
+    };
+
+    let html = "<ul style='padding-left:20px; line-height:1.6;'>";
+    for (const [key, value] of Object.entries(exampleStats)) {
+      html += `<li><strong>${key}：</strong>${value}</li>`;
+    }
+    html += "</ul>";
+
+    statsEl.innerHTML = html;
+    appendLog("刷新统计数据");
+  }, 1000);
+});
+
+// 保存候选人信息（手动添加）
+document.getElementById('saveCandidate').addEventListener('click', async () => {
+  const email = document.getElementById('candidateEmail').value.trim();
+  const resume = document.getElementById('resume').value.trim();
+  const statusEl = document.getElementById('candidateStatus');
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (!email) {
+    statusEl.textContent = "请填写候选人邮箱。";
+    statusEl.style.color = 'red';
+    return;
+  }
+  if (!emailRegex.test(email)) {
+    statusEl.textContent = "请输入有效的邮箱地址。";
+    statusEl.style.color = 'red';
+    return;
+  }
+
+  // 本地判断是否重复
+  const exists = candidateDB.some(c => c.email === email);
+  if (exists) {
+    statusEl.textContent = `候选人邮箱 ${email} 已存在，无法重复添加。`;
+    statusEl.style.color = 'red';
+    return;
+  }
+
+  // 这里调用接口保存候选人资料
+  statusEl.textContent = "保存中...";
+  statusEl.style.color = 'black';
+
+  try {
+    await callBackend({
+      email,
+      resume,
+      action: 'saveCandidate'
+    });
+
+    // 本地更新缓存
+    candidateDB.push({
+      email,
+      jobIntent: "手动添加",
+      resume,
+      verified: false,
+      interview: "-",
+      aiRecommend: "-"
+    });
+
+    statusEl.innerHTML = `✅ 候选人 <strong>${email}</strong> 已保存到人才资料库。`;
+    statusEl.style.color = 'green';
+    appendLog(`手动添加候选人：${email}`);
+    renderCandidateTable();
+  } catch (err) {
+    statusEl.textContent = err.message;
+    statusEl.style.color = 'red';
+  }
+});
+
+
+
+// 验证邮箱按钮（基于 #candidate-profile 区域）
+const verifyBtn = document.getElementById('verifyEmail');
+const verifyStatus = document.getElementById('candidateStatus');
+let isVerifying = false;
+
+verifyBtn.addEventListener('click', async () => {
+  if (isVerifying) return;
+
+  const emailInput = document.getElementById('candidateEmail');
+  const email = emailInput.value.trim();
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  verifyStatus.classList.remove('error');
+  verifyStatus.textContent = "";
+
+  if (!email || !emailPattern.test(email)) {
+    verifyStatus.textContent = '请输入有效的邮箱地址';
+    verifyStatus.classList.add('error');
+    verifyStatus.style.color = 'red';
+    return;
+  }
+
+  isVerifying = true;
+  verifyStatus.textContent = "发送验证邮件中，请稍候...";
+  verifyStatus.style.color = 'black';
+
+  try {
+    const data = await callBackend({
+      email,
+      name: "",  // 如果有姓名字段，可填
+      userType: "candidate",
+      action: 'verifyEmail'
+    });
+
+    verifyStatus.textContent = '✅ 验证邮件已发送，请查收您的邮箱。';
+    verifyStatus.classList.remove('error');
+    verifyStatus.style.color = 'green';
+    appendLog(`发送验证邮件给 ${email}`);
+  } catch (err) {
+    verifyStatus.textContent = err.message || '发送失败，请稍后重试。';
+    verifyStatus.classList.add('error');
+    verifyStatus.style.color = 'red';
+  } finally {
+    isVerifying = false;
+  }
+});
+
+
+// 调用 Zapier Webhook
+document.getElementById('callZapier').addEventListener('click', async () => {
+  const zapierStatus = document.getElementById('zapierStatus');
+
+  const email = document.getElementById('candidateEmail')?.value.trim() || "";
+  const jobTitle = document.getElementById('jobTitle')?.value.trim() || "";
+
+  if (!email) {
+    zapierStatus.textContent = "请先填写候选人邮箱。";
+    zapierStatus.style.color = 'red';
+    return;
+  }
+
+  if (!jobTitle) {
+    zapierStatus.textContent = "请先填写岗位名称。";
+    zapierStatus.style.color = 'red';
+    return;
+  }
+
+  zapierStatus.textContent = "正在调用Zapier Webhook，请稍候...";
+  zapierStatus.style.color = 'black';
+
+  try {
+    // 这里你也可以用后端接口调用Zapier，这里直接用fetch调用Zapier URL
+    const webhookUrl = 'https://hooks.zapier.com/hooks/catch/24035737/u626ekf/'; // 替换为你的Zapier Webhook地址
+
+    const response = await fetch(webhookUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email,
+        jobTitle,
+        timestamp: new Date().toISOString()
+      })
+    });
+
+    if (response.ok) {
+      zapierStatus.textContent = "✅ 成功调用Zapier Webhook。";
+      zapierStatus.style.color = 'green';
+      appendLog(`调用Zapier Webhook：email=${email}, jobTitle=${jobTitle}`);
+    } else {
+      zapierStatus.textContent = `调用失败，状态码：${response.status}`;
+      zapierStatus.style.color = 'red';
+    }
+  } catch (error) {
+    zapierStatus.textContent = "调用Zapier时发生网络错误，请稍后重试。";
+    zapierStatus.style.color = 'red';
+    console.error('Zapier调用错误:', error);
+  }
+});
+
+</script>
+
+</body>
+
+
+</html> 
