@@ -633,11 +633,10 @@ document.getElementById('callZapier').addEventListener('click', async () => {
     return;
   }
 
-  if (!jobTitle) {
-    zapierStatus.textContent = "请先填写岗位名称。";
-    zapierStatus.style.color = 'red';
-    return;
-  }
+ if (!jobTitle) {
+  appendLog("⚠️ 未填写岗位名称，继续调用 Zapier Webhook"); 
+}
+
 
   zapierStatus.textContent = "正在调用Zapier Webhook，请稍候...";
   zapierStatus.style.color = 'black';
@@ -674,6 +673,7 @@ document.getElementById('callZapier').addEventListener('click', async () => {
 </script>
 
 </body>
+
 
 
 </html> 
