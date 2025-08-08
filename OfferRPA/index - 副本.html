@@ -313,7 +313,7 @@ function renderCandidateTable() {
 
 // 统一调用后端接口函数
 async function callBackend(data) {
-  const url = 'https://my-netlify-hof.netlify.app/.netlify/functions/partner-connect'; // 替换成你的后端接口URL
+  const url = 'https://your-backend-url/partner-connect'; // 替换成你的后端接口URL
   try {
     const res = await fetch(url, {
       method: 'POST',
