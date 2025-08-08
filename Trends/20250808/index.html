@@ -1107,8 +1107,11 @@ tbody td:last-child {
     .table-responsive {
       overflow-x: auto;
       -webkit-overflow-scrolling: touch; /* 更流畅的滑动体验 */
-        h2 {
-    font-size: 1.125rem; /* 等于 18px，对应 Tailwind 的 text-lg */
+      h2 {
+    font-size: 1.3rem;   /* 使用和你 p 标签一样的字体大小 */
+    line-height: 1.5;
+    font-weight: bold;
+    /* 不加 color，保持原来的颜色不变 */
   }
     }
   }
