@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <title>Notion 数据展示</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #f5f6f7;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    thead {
+      background: #f2f3f5;
+    }
+    th, td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    th {
+      font-weight: 600;
+      color: #555;
+    }
+    tbody tr:hover {
+      background: #e6f7ff;
+    }
+    #status {
+      margin: 20px 0;
+      font-weight: bold;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Notion 数据展示（最近提交记录）</h2>
+
+  <div id="status">加载中...</div>
+
+  <table id="dataTable" style="display:none;">
+    <thead>
+      <tr>
+        <th>候选人邮箱</th>
+        <th>岗位名称</th>
+        <th>简历/备注</th>
+        <th>提交时间</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody">
+      <!-- 数据行插入这里 -->
+    </tbody>
+  </table>
+
+  <script>
+    async function fetchData() {
+      const status = document.getElementById('status');
+      const table = document.getElementById('dataTable');
+      const tbody = document.getElementById('tableBody');
+
+      try {
+        const res = await fetch('https://my-netlify-hof.netlify.app/.netlify/functions/notion-query');
+        const data = await res.json();
+
+        if (!res.ok) {
+          status.textContent = '❌ 加载失败: ' + (data.error || '未知错误');
+          status.style.color = 'red';
+          return;
+        }
+
+        if (!data.results || data.results.length === 0) {
+          status.textContent = '暂无数据';
+          status.style.color = '#555';
+          return;
+        }
+
+        // 清空旧数据
+        tbody.innerHTML = '';
+
+        // 遍历结果生成表格行
+        data.results.forEach(item => {
+          const tr = document.createElement('tr');
+
+          const email = item.email || '';
+          const jobTitle = item.jobTitle || '';
+          const resume = item.resume || '';
+          const timestamp = item.timestamp ? new Date(item.timestamp).toLocaleString() : '';
+
+          tr.innerHTML = `
+            <td>${email}</td>
+            <td>${jobTitle}</td>
+            <td>${resume}</td>
+            <td>${timestamp}</td>
+          `;
+
+          tbody.appendChild(tr);
+        });
+
+        status.style.display = 'none';
+        table.style.display = 'table';
+
+      } catch (err) {
+        status.textContent = '❌ 网络异常，请稍后再试';
+        status.style.color = 'red';
+        console.error(err);
+      }
+    }
+
+    fetchData();
+  </script>
+
+</body>
+</html> 

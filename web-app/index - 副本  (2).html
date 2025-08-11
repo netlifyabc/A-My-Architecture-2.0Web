@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>WebRTC 群聊 - 蓝灰科技风</title>
+  <style>
+    :root {
+      --bg-color: #ecf0f1;
+      --header-color: #2c3e50;
+      --me-color: #d6eaf8;
+      --other-color: #e5e8e8;
+      --accent-color: #3498db;
+      --font-color: #2c3e50;
+      --border-radius: 12px;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Helvetica, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--font-color);
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 40px auto;
+      background-color: white;
+      border-radius: var(--border-radius);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 600px;
+    }
+
+    .header {
+      background-color: var(--header-color);
+      color: white;
+      padding: 16px 20px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .chat-box {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background-color: #f8f9f9;
+    }
+
+    .message {
+      max-width: 70%;
+      padding: 10px 14px;
+      border-radius: var(--border-radius);
+      word-wrap: break-word;
+      line-height: 1.5;
+    }
+
+    .me {
+      align-self: flex-end;
+      background-color: var(--me-color);
+      border-bottom-right-radius: 0;
+    }
+
+    .other {
+      align-self: flex-start;
+      background-color: var(--other-color);
+      border-bottom-left-radius: 0;
+    }
+
+    .input-area {
+      display: flex;
+      padding: 12px;
+      border-top: 1px solid #ddd;
+      background: #fff;
+    }
+
+    .input-area input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: var(--border-radius);
+      font-size: 14px;
+    }
+
+    .input-area button {
+      margin-left: 10px;
+      padding: 10px 16px;
+      background-color: var(--accent-color);
+      color: white;
+      border: none;
+      border-radius: var(--border-radius);
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .input-area button:hover {
+      background-color: #2980b9;
+    }
+
+    .room-input {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      padding: 0 20px;
+    }
+
+    .room-input input {
+      flex: 1;
+      padding: 10px;
+      border-radius: var(--border-radius);
+      border: 1px solid #ccc;
+    }
+
+    .room-input button {
+      padding: 10px 16px;
+      border: none;
+      border-radius: var(--border-radius);
+      background-color: var(--accent-color);
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .room-input button:hover {
+      background-color: #2980b9;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">🔵 WebRTC 群聊 - 科技蓝灰风</div>
+
+    <div class="room-input">
+      <input type="text" id="roomId" placeholder="输入房间号，例如 team123" />
+      <button onclick="joinRoom()">加入</button>
+    </div>
+
+    <div class="chat-box" id="chatBox"></div>
+
+    <div class="input-area">
+      <input type="text" id="msgInput" placeholder="输入消息..." />
+      <button onclick="sendMessage()">发送</button>
+    </div>
+  </div>
+
+  <script>
+    // 本地演示用 - 假装有两人交互
+    const chatBox = document.getElementById('chatBox');
+    function joinRoom() {
+      const room = document.getElementById('roomId').value.trim();
+      if (room) {
+        addMessage(`你加入了房间：${room}`, 'other');
+      }
+    }
+
+    function sendMessage() {
+      const input = document.getElementById('msgInput');
+      const text = input.value.trim();
+      if (!text) return;
+      addMessage(text, 'me');
+      setTimeout(() => {
+        addMessage('（模拟回复）我也觉得你说得对。', 'other');
+      }, 1000);
+      input.value = '';
+    }
+
+    function addMessage(text, sender) {
+      const msg = document.createElement('div');
+      msg.className = `message ${sender}`;
+      msg.textContent = text;
+      chatBox.appendChild(msg);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+  </script>
+</body>
+</html> 

@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <title>WebRTC 聊天 + 语音通话</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Helvetica Neue", sans-serif;
+      background: #e5e5e5;
+    }
+
+    .chat-container {
+      max-width: 600px;
+      margin: 30px auto;
+      background: #fff;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      height: 80vh;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+
+    .chat-header {
+      background: #007aff;
+      color: white;
+      padding: 15px;
+      font-size: 18px;
+      text-align: center;
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .msg-row {
+      display: flex;
+      align-items: flex-end;
+    }
+
+    .msg-row.own {
+      justify-content: flex-end;
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin: 0 8px;
+    }
+
+    .bubble {
+      max-width: 65%;
+      padding: 10px 14px;
+      border-radius: 16px;
+      font-size: 15px;
+      line-height: 1.4;
+    }
+
+    .msg-row.own .bubble {
+      background: #daf8cb;
+      border-bottom-right-radius: 4px;
+    }
+
+    .msg-row.other .bubble {
+      background: #f1f0f0;
+      border-bottom-left-radius: 4px;
+    }
+
+    .nickname {
+      font-size: 12px;
+      margin-bottom: 3px;
+      color: #555;
+      margin-left: 50px;
+    }
+
+    .chat-input {
+      display: flex;
+      padding: 10px;
+      border-top: 1px solid #ddd;
+      background: #fafafa;
+    }
+
+    .chat-input input {
+      flex: 1;
+      padding: 10px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 20px;
+      outline: none;
+    }
+
+    .chat-input button {
+      margin-left: 10px;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 20px;
+      background: #007aff;
+      color: white;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .actions {
+      text-align: center;
+      padding: 10px;
+    }
+
+    .actions button {
+      margin: 5px;
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: none;
+      background: #4CAF50;
+      color: white;
+      cursor: pointer;
+    }
+
+
+    .chat-container {
+  position: relative; /* 新增，方便内部绝对定位 */
+}
+
+.chat-container {
+  position: relative;
+}
+
+.floating-call-btn {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(250, 248, 245, 0.6); /* 更淡的奶油白半透明 */
+  border: 1.5px solid rgba(210, 205, 198, 0.4); /* 更浅更柔和的边框 */
+  box-shadow:
+    0 6px 12px rgba(210, 205, 198, 0.2),
+    inset 0 1px 0 rgba(255 255 255 / 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease;
+  z-index: 10;
+}
+
+.floating-call-btn svg path {
+  stroke: #b9b2a6; /* 浅灰奶咖色，更柔和 */
+  stroke-width: 2.2;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* 通话中状态样式 */
+.floating-call-btn.active-call {
+  background: rgba(198, 239, 217, 0.85); /* 柔和薄荷绿背景 */
+  border-color: rgba(120, 200, 140, 0.7);
+  box-shadow:
+    0 0 8px 4px rgba(120, 200, 140, 0.4),
+    inset 0 1px 0 rgba(255 255 255 / 0.95);
+  color: #2f6f3e;
+  animation: pulse 2.5s infinite ease-in-out;
+}
+
+/* 通话中悬浮时加强光环 */
+.floating-call-btn.active-call:hover {
+  background: rgba(180, 230, 200, 0.95);
+  box-shadow:
+    0 0 12px 6px rgba(90, 180, 120, 0.6),
+    inset 0 1px 0 rgba(255 255 255 / 1);
+  transform: scale(1.1);
+}
+
+/* 脉冲动画 */
+@keyframes pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 8px 4px rgba(120, 200, 140, 0.4),
+      inset 0 1px 0 rgba(255 255 255 / 0.95);
+  }
+  50% {
+    box-shadow:
+      0 0 12px 8px rgba(120, 200, 140, 0.7),
+      inset 0 1px 0 rgba(255 255 255 / 0.95);
+  }
+}
+
+/* 通话中图标变色 */
+.floating-call-btn.active-call svg path {
+  stroke: #2f6f3e;
+}
+
+  </style>
+</head>
+<body>
+
+
+
+<div class="chat-container">
+  <div class="chat-header">群聊（支持语音）</div> 
+
+  
+<!-- 这个按钮放在 chat-container 内，紧跟 chat-header 后面 -->
+<button class="floating-call-btn" onclick="start()" aria-label="发起语音通话" title="发起语音通话">
+  <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+    <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.11-.21 11.36 11.36 0 003.58 1.14 1 1 0 01.89 1v3.37a1 1 0 01-1 1A17 17 0 013 6a1 1 0 011-1h3.38a1 1 0 011 .89 11.36 11.36 0 001.14 3.58 1 1 0 01-.21 1.11l-2.7 2.21z"/>
+  </svg>
+</button>
+
+
+  <div class="chat-messages" id="messages">
+    <div class="msg-row other">
+      <img class="avatar" src="https://api.dicebear.com/7.x/thumbs/svg?seed=Alice" />
+      <div>
+        <div class="nickname">Alice</div>
+        <div class="bubble">Hello，我在等人上线</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chat-input">
+    <input type="text" id="msgInput" placeholder="输入消息..." />
+    <button onclick="send()">发送</button>
+  </div>
+
+<div class="actions" style="display: flex; align-items: center; gap: 12px; justify-content: center;">
+  <button onclick="start()">发起语音通话</button>
+
+  <button
+    onclick="copyLink()"
+    title="复制房间链接"
+    style="
+      background: transparent;
+      border: none;
+      font-size: 20px;
+      color: #bbb;
+      cursor: pointer;
+      transition: color 0.2s ease;
+      user-select: none;
+    "
+    onmouseover="this.style.color='#007aff';"
+    onmouseout="this.style.color='#bbb';"
+  >
+    📋
+  </button>
+</div>
+
+
+
+<script>
+let socket;
+let pc;
+let dataChannel;
+let localStream;
+const room = prompt("输入房间号", "room123");
+
+socket = new WebSocket("ws://localhost:3000"); // ✅ 修改为你的信令服务器地址
+
+socket.onopen = () => {
+  socket.send(JSON.stringify({ type: "join", room }));
+};
+
+socket.onmessage = async (event) => {
+  const msg = JSON.parse(event.data);
+
+  if (msg.type === "joined") {
+    await createConnection(true);
+  } else if (msg.type === "signal") {
+    await handleSignal(msg.payload);
+  }
+};
+
+async function start() {
+  localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+  localStream.getAudioTracks().forEach(track => {
+    pc.addTrack(track, localStream);
+  });
+
+  const audio = new Audio();
+  audio.srcObject = localStream;
+  audio.muted = true;
+  audio.play();
+
+  const offer = await pc.createOffer();
+  await pc.setLocalDescription(offer);
+  socket.send(JSON.stringify({ type: "signal", room, payload: { sdp: offer } }));
+}
+
+async function createConnection(isCaller) {
+  pc = new RTCPeerConnection();
+
+  pc.onicecandidate = (event) => {
+    if (event.candidate) {
+      socket.send(JSON.stringify({ type: "signal", room, payload: { candidate: event.candidate } }));
+    }
+  };
+
+  pc.ontrack = (event) => {
+    const remoteAudio = new Audio();
+    remoteAudio.srcObject = event.streams[0];
+    remoteAudio.autoplay = true;
+    remoteAudio.play();
+  };
+
+  if (!isCaller) {
+    // 非主叫方也要创建 dataChannel
+    pc.ondatachannel = (event) => {
+      dataChannel = event.channel;
+      setupChannel(dataChannel);
+    }
+  } else {
+    dataChannel = pc.createDataChannel("chat");
+    setupChannel(dataChannel);
+  }
+}
+
+function setupChannel(channel) {
+  channel.onmessage = (event) => {
+    addMessage(event.data, false);
+  };
+}
+
+async function handleSignal(data) {
+  if (data.sdp) {
+    await pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
+    if (data.sdp.type === "offer") {
+      localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      localStream.getAudioTracks().forEach(track => {
+        pc.addTrack(track, localStream);
+      });
+
+      const audio = new Audio();
+      audio.srcObject = localStream;
+      audio.muted = true;
+      audio.play();
+
+      const answer = await pc.createAnswer();
+      await pc.setLocalDescription(answer);
+      socket.send(JSON.stringify({ type: "signal", room, payload: { sdp: answer } }));
+    }
+  } else if (data.candidate) {
+    await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
+  }
+}
+
+function send() {
+  const input = document.getElementById("msgInput");
+  const text = input.value.trim();
+  if (!text) return;
+
+  addMessage(text, true);
+  if (dataChannel && dataChannel.readyState === "open") {
+    dataChannel.send(text);
+  }
+
+  input.value = '';
+}
+
+function addMessage(text, isMine) {
+  const messages = document.getElementById("messages");
+
+  const row = document.createElement("div");
+  row.className = "msg-row " + (isMine ? "own" : "other");
+
+  const avatar = document.createElement("img");
+  avatar.className = "avatar";
+  avatar.src = isMine
+    ? "https://api.dicebear.com/7.x/thumbs/svg?seed=Me"
+    : "https://api.dicebear.com/7.x/thumbs/svg?seed=Remote";
+
+  const bubble = document.createElement("div");
+  bubble.className = "bubble";
+  bubble.textContent = text;
+
+  if (isMine) {
+    row.appendChild(bubble);
+    row.appendChild(avatar);
+  } else {
+    const wrapper = document.createElement("div");
+    const name = document.createElement("div");
+    name.className = "nickname";
+    name.textContent = "对方";
+    wrapper.appendChild(name);
+    wrapper.appendChild(bubble);
+    row.appendChild(avatar);
+    row.appendChild(wrapper);
+  }
+
+  messages.appendChild(row);
+  messages.scrollTop = messages.scrollHeight;
+} 
+
+
+function copyLink() {
+  const roomUrl = `${location.origin}?room=${room}`; // 或你实际的分享链接格式
+  navigator.clipboard.writeText(roomUrl).then(() => {
+    alert("房间链接已复制，快去分享吧！");
+  });
+} 
+
+
+async function start() {
+  try {
+    // 请求麦克风权限并建立流
+    localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    localStream.getAudioTracks().forEach(track => {
+      pc.addTrack(track, localStream);
+    });
+
+    const audio = new Audio();
+    audio.srcObject = localStream;
+    audio.muted = true;
+    audio.play();
+
+    // UI：拨通中状态开启
+    setCallActive(true);
+
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+    socket.send(JSON.stringify({ type: "signal", room, payload: { sdp: offer } }));
+  } catch (err) {
+    console.error("拨打失败", err);
+    setCallActive(false);
+    alert("拨打失败，请检查麦克风权限和网络");
+  }
+}
+
+// 通话状态按钮样式控制
+function setCallActive(isActive) {
+  const btn = document.querySelector(".floating-call-btn");
+  if (!btn) return;
+  if (isActive) {
+    btn.classList.add("active-call");
+  } else {
+    btn.classList.remove("active-call");
+  }
+}
+
+// 通话结束时调用
+function endCall() {
+  if (localStream) {
+    localStream.getTracks().forEach(track => track.stop());
+    localStream = null;
+  }
+  if (pc) {
+    pc.close();
+    pc = null;
+  }
+  setCallActive(false);
+  alert("通话已结束");
+}
+
+</script>
+</body>
+
+</html>

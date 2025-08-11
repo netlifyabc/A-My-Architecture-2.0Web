@@ -6,30 +6,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     /* 基础样式 */
-     body {
-  margin: 0;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background: #f5f7fa;
-  color: #333;
-  display: flex;
-  min-height: 100vh; /* 保证至少撑满屏幕 */
-  align-items: stretch; /* 让子元素都撑满高度 */
-}
-
-nav {
-  width: 220px;
-  background: #004a9f;
-  color: white;
-  display: flex;
-  flex-direction: column;
-  padding-top: 20px;
-  /* 去掉高度限制 */
-  /* height: 100vh; */
-  min-height: 100vh; /* 保证导航栏至少撑满视口高度 */
-  box-sizing: border-box;
-  overflow-y: auto;  /* 允许内容滚动，避免内容溢出被裁剪 */
-}
-
+    body {
+      margin: 0; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f7fa; color: #333;
+      display: flex; height: 100vh;
+    }
+    /* 侧边栏 */
+    nav {
+      width: 220px;
+      background: #004a9f;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      padding-top: 20px;
+    }
     nav h2 {
       margin: 0 0 20px 20px;
       font-weight: 700;
@@ -729,8 +719,11 @@ document.getElementById('callZapier').addEventListener('click', async () => {
   }
 });
 
+
 </script>
 
 </body>
+
+
 
 </html> 

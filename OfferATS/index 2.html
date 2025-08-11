@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>简约聊天 - WebRTC</title>
+  <style>
+    body {
+      font-family: "Helvetica", sans-serif;
+      background: #f0f2f5;
+      display: flex;
+      justify-content: center;
+      padding: 50px;
+    }
+
+    .container {
+      width: 400px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+
+    .top-bar {
+      padding: 15px;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .top-bar input {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    .top-bar button {
+      padding: 8px 12px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .chat-window {
+      display: flex;
+      flex-direction: column;
+      height: 400px;
+    }
+
+    .message-box {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .my-msg, .other-msg {
+      max-width: 75%;
+      padding: 8px 12px;
+      margin: 8px 0;
+      border-radius: 10px;
+      line-height: 1.4em;
+      word-break: break-word;
+    }
+
+    .my-msg {
+      background: #DCF8C6;
+      align-self: flex-end;
+      text-align: right;
+    }
+
+    .other-msg {
+      background: #eee;
+      align-self: flex-start;
+    }
+
+    .input-bar {
+      display: flex;
+      border-top: 1px solid #eee;
+      padding: 10px;
+    }
+
+    .input-bar input {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    .input-bar button {
+      margin-left: 10px;
+      padding: 8px 12px;
+      background: #2196F3;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="top-bar">
+      <label>房间号：</label>
+      <input id="roomId" type="text" value="room123" placeholder="请输入房间号">
+      <button onclick="join()">加入</button>
+    </div>
+
+    <div class="chat-window" id="chat" style="display: none;">
+      <div class="message-box" id="messages"></div>
+      <div class="input-bar">
+        <input type="text" id="inputMsg" placeholder="输入你的消息...">
+        <button onclick="sendMsg()">发送</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let pc, dataChannel, socket, roomId;
+    const signalingServerURL = "wss://your-railway-app.up.railway.app"; // 替换为你的信令服务地址
+
+    function join() {
+      roomId = document.getElementById("roomId").value;
+      socket = new WebSocket(signalingServerURL);
+
+      socket.onopen = () => {
+        socket.send(JSON.stringify({ type: "join", roomId }));
+        startWebRTC();
+      };
+
+      socket.onmessage = async (event) => {
+        const data = JSON.parse(event.data);
+        if (data.type === "joined") {
+          console.log("Joined room:", data.roomId);
+        } else if (data.type === "signal") {
+          await handleSignal(data.payload);
+        }
+      };
+    }
+
+    async function startWebRTC() {
+      pc = new RTCPeerConnection();
+      dataChannel = pc.createDataChannel("chat");
+      setupDataChannel();
+
+      pc.onicecandidate = (event) => {
+        if (event.candidate) {
+          sendSignal({ candidate: event.candidate });
+        }
+      };
+
+      pc.ondatachannel = (event) => {
+        dataChannel = event.channel;
+        setupDataChannel();
+      };
+
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+      sendSignal({ sdp: pc.localDescription });
+    }
+
+    async function handleSignal({ sdp, candidate }) {
+      if (sdp) {
+        await pc.setRemoteDescription(new RTCSessionDescription(sdp));
+        if (sdp.type === "offer") {
+          const answer = await pc.createAnswer();
+          await pc.setLocalDescription(answer);
+          sendSignal({ sdp: pc.localDescription });
+        }
+      }
+      if (candidate) {
+        try {
+          await pc.addIceCandidate(new RTCIceCandidate(candidate));
+        } catch (e) {
+          console.error("Error adding ICE candidate", e);
+        }
+      }
+
+      document.getElementById("chat").style.display = "flex";
+    }
+
+    function sendSignal(payload) {
+      socket.send(JSON.stringify({ type: "signal", roomId, payload }));
+    }
+
+    function setupDataChannel() {
+      dataChannel.onopen = () => {
+        console.log("DataChannel opened");
+      };
+
+      dataChannel.onmessage = (event) => {
+        appendMessage("other-msg", event.data);
+      };
+    }
+
+    function sendMsg() {
+      const input = document.getElementById("inputMsg");
+      const message = input.value.trim();
+      if (message === "") return;
+
+      dataChannel.send(message);
+      appendMessage("my-msg", message);
+      input.value = "";
+    }
+
+    function appendMessage(className, text) {
+      const box = document.getElementById("messages");
+      const div = document.createElement("div");
+      div.className = className;
+      div.textContent = text;
+      box.appendChild(div);
+      box.scrollTop = box.scrollHeight;
+    }
+  </script>
+</body>
+
+
+
+
+
+
+</html> 

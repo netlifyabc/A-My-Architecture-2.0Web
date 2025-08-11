@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>仿微信聊天界面 - 演示</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Helvetica Neue', 'Segoe UI', 'PingFang SC', sans-serif;
+      background: #eceff1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .chat-container {
+      width: 380px;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .chat-header {
+      background: #009688;
+      color: white;
+      padding: 16px;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .chat-body {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: #f5f5f5;
+    }
+
+    .message {
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+    }
+
+    .message.you {
+      flex-direction: row-reverse;
+    }
+
+    .message .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #ccc;
+      flex-shrink: 0;
+    }
+
+    .message .bubble {
+      max-width: 70%;
+      padding: 10px 14px;
+      border-radius: 16px;
+      line-height: 1.4em;
+      font-size: 14px;
+    }
+
+    .you .bubble {
+      background: #DCF8C6;
+      border-bottom-right-radius: 2px;
+    }
+
+    .other .bubble {
+      background: #fff;
+      border-bottom-left-radius: 2px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+    }
+
+    .chat-input {
+      display: flex;
+      border-top: 1px solid #ddd;
+      padding: 10px;
+      background: #fff;
+    }
+
+    .chat-input input {
+      flex: 1;
+      padding: 8px 12px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 20px;
+      outline: none;
+    }
+
+    .chat-input button {
+      background: #009688;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      margin-left: 8px;
+      cursor: pointer;
+    }
+
+    .chat-input button:hover {
+      background: #00796b;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="chat-header">房间：test-group</div>
+    <div class="chat-body" id="chatBody">
+      <!-- 示例对话气泡 -->
+      <div class="message other">
+        <div class="avatar"></div>
+        <div class="bubble">你好，请问矿机还在售吗？</div>
+      </div>
+      <div class="message you">
+        <div class="avatar"></div>
+        <div class="bubble">在的，我们目前还有 S21 系列库存</div>
+      </div>
+      <div class="message other">
+        <div class="avatar"></div>
+        <div class="bubble">可以接受 USDT 付款吗？</div>
+      </div>
+      <div class="message you">
+        <div class="avatar"></div>
+        <div class="bubble">当然支持。我们可以发货到香港仓。</div>
+      </div>
+    </div>
+
+    <div class="chat-input">
+      <input type="text" placeholder="输入你的消息..." />
+      <button>发送</button>
+    </div>
+  </div>
+</body>
+
+
+</html> 

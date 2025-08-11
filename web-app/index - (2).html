@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>WebRTC 群聊界面 - 微信风格</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Helvetica Neue", sans-serif;
+      background: #e5e5e5;
+    }
+
+    .chat-container {
+      max-width: 600px;
+      margin: 30px auto;
+      background: #fff;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      height: 80vh;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+
+    .chat-header {
+      background: #007aff;
+      color: white;
+      padding: 15px;
+      font-size: 18px;
+      text-align: center;
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .msg-row {
+      display: flex;
+      align-items: flex-end;
+    }
+
+    .msg-row.own {
+      justify-content: flex-end;
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin: 0 8px;
+    }
+
+    .bubble {
+      max-width: 65%;
+      padding: 10px 14px;
+      border-radius: 16px;
+      font-size: 15px;
+      line-height: 1.4;
+    }
+
+    .msg-row.own .bubble {
+      background: #daf8cb;
+      border-bottom-right-radius: 4px;
+    }
+
+    .msg-row.other .bubble {
+      background: #f1f0f0;
+      border-bottom-left-radius: 4px;
+    }
+
+    .nickname {
+      font-size: 12px;
+      margin-bottom: 3px;
+      color: #555;
+      margin-left: 50px;
+    }
+
+    .chat-input {
+      display: flex;
+      padding: 10px;
+      border-top: 1px solid #ddd;
+      background: #fafafa;
+    }
+
+    .chat-input input {
+      flex: 1;
+      padding: 10px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 20px;
+      outline: none;
+    }
+
+    .chat-input button {
+      margin-left: 10px;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 20px;
+      background: #007aff;
+      color: white;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="chat-container">
+  <div class="chat-header">群聊（WebRTC UI 模拟）</div>
+
+  <div class="chat-messages" id="messages">
+    <!-- 模拟聊天消息 -->
+    <div class="msg-row other">
+      <img class="avatar" src="https://api.dicebear.com/7.x/thumbs/svg?seed=Alice" />
+      <div>
+        <div class="nickname">Alice</div>
+        <div class="bubble">大家好，我是 Alice！</div>
+      </div>
+    </div>
+
+    <div class="msg-row own">
+      <div class="bubble">Hi！欢迎加入 🤝</div>
+      <img class="avatar" src="https://api.dicebear.com/7.x/thumbs/svg?seed=Me" />
+    </div>
+
+    <div class="msg-row other">
+      <img class="avatar" src="https://api.dicebear.com/7.x/thumbs/svg?seed=Bob" />
+      <div>
+        <div class="nickname">Bob</div>
+        <div class="bubble">我们今天几点会议？</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chat-input">
+    <input type="text" id="msgInput" placeholder="输入消息..." />
+    <button onclick="send()">发送</button>
+  </div>
+</div>
+
+<script>
+  function send() {
+    const input = document.getElementById("msgInput");
+    const text = input.value.trim();
+    if (!text) return;
+
+    const messages = document.getElementById("messages");
+
+    const row = document.createElement("div");
+    row.className = "msg-row own";
+
+    const bubble = document.createElement("div");
+    bubble.className = "bubble";
+    bubble.textContent = text;
+
+    const avatar = document.createElement("img");
+    avatar.className = "avatar";
+    avatar.src = "https://api.dicebear.com/7.x/thumbs/svg?seed=Me";
+
+    row.appendChild(bubble);
+    row.appendChild(avatar);
+    messages.appendChild(row);
+
+    input.value = '';
+    messages.scrollTop = messages.scrollHeight;
+  }
+</script>
+
+</body>
+</html> 

@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <title>WebRTC 聊天 + 语音通话</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Helvetica Neue", sans-serif;
+      background: #e5e5e5;
+    }
+
+    .chat-container {
+      max-width: 600px;
+      margin: 30px auto;
+      background: #fff;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      height: 80vh;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+
+    .chat-header {
+      background: #007aff;
+      color: white;
+      padding: 15px;
+      font-size: 18px;
+      text-align: center;
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .msg-row {
+      display: flex;
+      align-items: flex-end;
+    }
+
+    .msg-row.own {
+      justify-content: flex-end;
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin: 0 8px;
+    }
+
+    .bubble {
+      max-width: 65%;
+      padding: 10px 14px;
+      border-radius: 16px;
+      font-size: 15px;
+      line-height: 1.4;
+    }
+
+    .msg-row.own .bubble {
+      background: #daf8cb;
+      border-bottom-right-radius: 4px;
+    }
+
+    .msg-row.other .bubble {
+      background: #f1f0f0;
+      border-bottom-left-radius: 4px;
+    }
+
+    .nickname {
+      font-size: 12px;
+      margin-bottom: 3px;
+      color: #555;
+      margin-left: 50px;
+    }
+
+    .chat-input {
+      display: flex;
+      padding: 10px;
+      border-top: 1px solid #ddd;
+      background: #fafafa;
+    }
+
+    .chat-input input {
+      flex: 1;
+      padding: 10px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 20px;
+      outline: none;
+    }
+
+    .chat-input button {
+      margin-left: 10px;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 20px;
+      background: #007aff;
+      color: white;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .actions {
+      text-align: center;
+      padding: 10px;
+    }
+
+    .actions button {
+      margin: 5px;
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: none;
+      background: #4CAF50;
+      color: white;
+      cursor: pointer;
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="chat-container">
+  <div class="chat-header">群聊（支持语音）</div>
+
+  <div class="chat-messages" id="messages">
+    <div class="msg-row other">
+      <img class="avatar" src="https://api.dicebear.com/7.x/thumbs/svg?seed=Alice" />
+      <div>
+        <div class="nickname">Alice</div>
+        <div class="bubble">Hello，我在等人上线</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chat-input">
+    <input type="text" id="msgInput" placeholder="输入消息..." />
+    <button onclick="send()">发送</button>
+  </div>
+
+<div class="actions" style="display: flex; align-items: center; gap: 12px; justify-content: center;">
+  <button onclick="start()">发起语音通话</button>
+
+  <button
+    onclick="copyLink()"
+    title="复制房间链接"
+    style="
+      background: transparent;
+      border: none;
+      font-size: 20px;
+      color: #bbb;
+      cursor: pointer;
+      transition: color 0.2s ease;
+      user-select: none;
+    "
+    onmouseover="this.style.color='#007aff';"
+    onmouseout="this.style.color='#bbb';"
+  >
+    📋
+  </button>
+</div>
+
+
+
+<script>
+let socket;
+let pc;
+let dataChannel;
+let localStream;
+const room = prompt("输入房间号", "room123");
+
+socket = new WebSocket("ws://localhost:3000"); // ✅ 修改为你的信令服务器地址
+
+socket.onopen = () => {
+  socket.send(JSON.stringify({ type: "join", room }));
+};
+
+socket.onmessage = async (event) => {
+  const msg = JSON.parse(event.data);
+
+  if (msg.type === "joined") {
+    await createConnection(true);
+  } else if (msg.type === "signal") {
+    await handleSignal(msg.payload);
+  }
+};
+
+async function start() {
+  localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+  localStream.getAudioTracks().forEach(track => {
+    pc.addTrack(track, localStream);
+  });
+
+  const audio = new Audio();
+  audio.srcObject = localStream;
+  audio.muted = true;
+  audio.play();
+
+  const offer = await pc.createOffer();
+  await pc.setLocalDescription(offer);
+  socket.send(JSON.stringify({ type: "signal", room, payload: { sdp: offer } }));
+}
+
+async function createConnection(isCaller) {
+  pc = new RTCPeerConnection();
+
+  pc.onicecandidate = (event) => {
+    if (event.candidate) {
+      socket.send(JSON.stringify({ type: "signal", room, payload: { candidate: event.candidate } }));
+    }
+  };
+
+  pc.ontrack = (event) => {
+    const remoteAudio = new Audio();
+    remoteAudio.srcObject = event.streams[0];
+    remoteAudio.autoplay = true;
+    remoteAudio.play();
+  };
+
+  if (!isCaller) {
+    // 非主叫方也要创建 dataChannel
+    pc.ondatachannel = (event) => {
+      dataChannel = event.channel;
+      setupChannel(dataChannel);
+    }
+  } else {
+    dataChannel = pc.createDataChannel("chat");
+    setupChannel(dataChannel);
+  }
+}
+
+function setupChannel(channel) {
+  channel.onmessage = (event) => {
+    addMessage(event.data, false);
+  };
+}
+
+async function handleSignal(data) {
+  if (data.sdp) {
+    await pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
+    if (data.sdp.type === "offer") {
+      localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      localStream.getAudioTracks().forEach(track => {
+        pc.addTrack(track, localStream);
+      });
+
+      const audio = new Audio();
+      audio.srcObject = localStream;
+      audio.muted = true;
+      audio.play();
+
+      const answer = await pc.createAnswer();
+      await pc.setLocalDescription(answer);
+      socket.send(JSON.stringify({ type: "signal", room, payload: { sdp: answer } }));
+    }
+  } else if (data.candidate) {
+    await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
+  }
+}
+
+function send() {
+  const input = document.getElementById("msgInput");
+  const text = input.value.trim();
+  if (!text) return;
+
+  addMessage(text, true);
+  if (dataChannel && dataChannel.readyState === "open") {
+    dataChannel.send(text);
+  }
+
+  input.value = '';
+}
+
+function addMessage(text, isMine) {
+  const messages = document.getElementById("messages");
+
+  const row = document.createElement("div");
+  row.className = "msg-row " + (isMine ? "own" : "other");
+
+  const avatar = document.createElement("img");
+  avatar.className = "avatar";
+  avatar.src = isMine
+    ? "https://api.dicebear.com/7.x/thumbs/svg?seed=Me"
+    : "https://api.dicebear.com/7.x/thumbs/svg?seed=Remote";
+
+  const bubble = document.createElement("div");
+  bubble.className = "bubble";
+  bubble.textContent = text;
+
+  if (isMine) {
+    row.appendChild(bubble);
+    row.appendChild(avatar);
+  } else {
+    const wrapper = document.createElement("div");
+    const name = document.createElement("div");
+    name.className = "nickname";
+    name.textContent = "对方";
+    wrapper.appendChild(name);
+    wrapper.appendChild(bubble);
+    row.appendChild(avatar);
+    row.appendChild(wrapper);
+  }
+
+  messages.appendChild(row);
+  messages.scrollTop = messages.scrollHeight;
+} 
+
+
+function copyLink() {
+  const roomUrl = `${location.origin}?room=${room}`; // 或你实际的分享链接格式
+  navigator.clipboard.writeText(roomUrl).then(() => {
+    alert("房间链接已复制，快去分享吧！");
+  });
+}
+
+</script>
+</body>
+
+</html>
