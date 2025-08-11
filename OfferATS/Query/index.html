@@ -13,7 +13,21 @@
     }
     h2 {
       text-align: center;
-      margin-bottom: 24px;
+      margin-bottom: 16px;
+    }
+    #loadButton {
+      display: block;
+      margin: 0 auto 24px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    #loadButton:hover {
+      background-color: #0056b3;
     }
     table {
       width: 100%;
@@ -49,7 +63,9 @@
 
   <h2>Notion 数据展示（最近提交记录）</h2>
 
-  <div id="status">加载中...</div>
+  <button id="loadButton">🔍 点击查询 Notion 数据</button>
+
+  <div id="status" style="display:none;">加载中...</div>
 
   <table id="dataTable" style="display:none;">
     <thead>
@@ -66,38 +82,59 @@
   </table>
 
   <script>
+    document.getElementById('loadButton').addEventListener('click', fetchData);
+
     async function fetchData() {
       const status = document.getElementById('status');
       const table = document.getElementById('dataTable');
       const tbody = document.getElementById('tableBody');
+      const button = document.getElementById('loadButton');
+
+      // 显示加载状态
+      status.textContent = '正在加载，请稍候...';
+      status.style.display = 'block';
+      status.style.color = '#000';
+      table.style.display = 'none';
+      button.disabled = true;
 
       try {
-        const res = await fetch('https://my-netlify-hof.netlify.app/.netlify/functions/notion-query');
+        const res = await fetch('https://my-netlify-hof.netlify.app/.netlify/functions/notion-query', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            email: '' // 👈 全量查询
+          })
+        });
+
         const data = await res.json();
 
         if (!res.ok) {
           status.textContent = '❌ 加载失败: ' + (data.error || '未知错误');
           status.style.color = 'red';
+          button.disabled = false;
           return;
         }
 
         if (!data.results || data.results.length === 0) {
           status.textContent = '暂无数据';
           status.style.color = '#555';
+          button.disabled = false;
           return;
         }
 
         // 清空旧数据
         tbody.innerHTML = '';
 
-        // 遍历结果生成表格行
         data.results.forEach(item => {
           const tr = document.createElement('tr');
-
           const email = item.email || '';
           const jobTitle = item.jobTitle || '';
           const resume = item.resume || '';
-          const timestamp = item.timestamp ? new Date(item.timestamp).toLocaleString() : '';
+          const timestamp = item.timestamp
+            ? new Date(item.timestamp).toLocaleString()
+            : '';
 
           tr.innerHTML = `
             <td>${email}</td>
@@ -109,18 +146,21 @@
           tbody.appendChild(tr);
         });
 
+        // 显示表格
         status.style.display = 'none';
         table.style.display = 'table';
+        button.disabled = false;
 
       } catch (err) {
         status.textContent = '❌ 网络异常，请稍后再试';
         status.style.color = 'red';
+        button.disabled = false;
         console.error(err);
       }
     }
-
-    fetchData();
   </script>
 
 </body>
+
+
 </html> 
