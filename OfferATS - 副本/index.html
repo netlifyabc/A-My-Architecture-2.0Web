@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <title>Zapier 测试提交页面</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 480px;
+      margin: 40px auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 4px;
+      box-sizing: border-box;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 16px;
+      background-color: #0070f3;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    #status {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Zapier 写入 Notion 测试</h2>
+
+  <label for="email">候选人邮箱</label>
+  <input type="email" id="email" placeholder="abc@example.com" required />
+
+  <label for="jobTitle">岗位名称</label>
+  <input type="text" id="jobTitle" placeholder="后端开发工程师" />
+
+  <label for="resume">简历或备注</label>
+  <textarea id="resume" rows="5" placeholder="简历内容..." ></textarea>
+
+  <button onclick="submitToZapier()">提交到 Notion</button>
+
+  <div id="status"></div>
+
+  <script>
+    async function submitToZapier() {
+      const email = document.getElementById('email').value.trim();
+      const jobTitle = document.getElementById('jobTitle').value.trim();
+      const resume = document.getElementById('resume').value.trim();
+      const status = document.getElementById('status');
+
+      if (!email || !email.includes('@')) {
+        status.textContent = '❌ 请填写有效的邮箱地址';
+        status.style.color = 'red';
+        return;
+      }
+
+      status.textContent = '⏳ 正在提交，请稍候...';
+      status.style.color = 'black';
+
+      try {
+        const res = await fetch('https://my-netlify-hof.netlify.app/.netlify/functions/partner-connect', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email,
+            jobTitle,
+            resume,
+            action: 'callZapier'
+          })
+        });
+
+        const result = await res.json();
+
+        if (res.ok) {
+          status.textContent = '✅ 成功调用 Zapier，检查 Notion 数据库';
+          status.style.color = 'green';
+        } else {
+          status.textContent = '❌ 错误：' + (result.error || '未知错误');
+          status.style.color = 'red';
+        }
+
+      } catch (err) {
+        console.error('网络异常:', err);
+        status.textContent = '❌ 网络异常，请稍后再试';
+        status.style.color = 'red';
+      }
+    }
+  </script>
+
+</body>
+
+
+</html> 
