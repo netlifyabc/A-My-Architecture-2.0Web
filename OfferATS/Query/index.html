@@ -2,165 +2,220 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8" />
-  <title>Notion 数据展示</title>
+  <title>候选人简历汇总</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      max-width: 800px;
-      margin: 40px auto;
-      padding: 20px;
-      background: #f5f6f7;
-    }
-    h2 {
-      text-align: center;
-      margin-bottom: 16px;
-    }
-    #loadButton {
-      display: block;
-      margin: 0 auto 24px;
-      padding: 10px 20px;
-      font-size: 16px;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    #loadButton:hover {
-      background-color: #0056b3;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: white;
-      box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
-      border-radius: 8px;
-      overflow: hidden;
-    }
-    thead {
-      background: #f2f3f5;
-    }
-    th, td {
-      padding: 12px 16px;
-      text-align: left;
-      border-bottom: 1px solid #e0e0e0;
-    }
-    th {
-      font-weight: 600;
-      color: #555;
-    }
-    tbody tr:hover {
-      background: #e6f7ff;
-    }
-    #status {
-      margin: 20px 0;
-      font-weight: bold;
-      text-align: center;
-    }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  --primary: #2563eb;
+  --bg: #f4f6f8;
+  --card-bg: #ffffff;
+  --text-main: #1e293b;
+  --text-subtle: #64748b;
+  --border: #e2e8f0;
+  --hover: #f1f5f9;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--bg);
+  color: var(--text-main);
+  margin: 0;
+  padding: 60px 24px;
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 1080px;
+  margin: 0 auto;
+  background: var(--card-bg);
+  padding: 48px 56px;
+  border-radius: 18px;
+  box-shadow: 0 20px 80px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--border);
+  transition: all 0.3s ease;
+}
+
+h2 {
+  margin-top: 0;
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--text-main);
+  letter-spacing: -0.3px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+h2::before {
+  content: '📄';
+  font-size: 24px;
+  opacity: 0.85;
+}
+
+button {
+  background-color: var(--primary);
+  color: white;
+  padding: 14px 28px;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.2);
+}
+
+button:hover {
+  background-color: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+.loading {
+  margin-top: 24px;
+  font-style: italic;
+  color: var(--text-subtle);
+  font-size: 15px;
+  animation: fadeIn 0.5s ease;
+}
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 36px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.03);
+  animation: fadeInUp 0.5s ease;
+}
+
+th, td {
+  padding: 18px 22px;
+  text-align: left;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 15px;
+}
+
+th {
+  background-color: #f9fafb;
+  font-weight: 600;
+  color: #334155;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 13px;
+}
+
+td {
+  color: #1f2937;
+}
+
+tr:hover {
+  background-color: var(--hover);
+  transition: background 0.2s ease;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+a {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* 动画效果 */
+@keyframes fadeIn {
+  from { opacity: 0 }
+  to { opacity: 1 }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
   </style>
 </head>
 <body>
+  <div class="container">
+    <h2>候选人简历汇总</h2>
+    <button onclick="loadResumes()">点击加载候选人列表</button>
+    <div id="loading" class="loading" style="display:none;">正在加载数据，请稍候...</div>
 
-  <h2>Notion 数据展示（最近提交记录）</h2>
-
-  <button id="loadButton">🔍 点击查询 Notion 数据</button>
-
-  <div id="status" style="display:none;">加载中...</div>
-
-  <table id="dataTable" style="display:none;">
-    <thead>
-      <tr>
-        <th>候选人邮箱</th>
-        <th>岗位名称</th>
-        <th>简历/备注</th>
-        <th>提交时间</th>
-      </tr>
-    </thead>
-    <tbody id="tableBody">
-      <!-- 数据行插入这里 -->
-    </tbody>
-  </table>
+    <table id="resumeTable" style="display: none;">
+      <thead>
+        <tr>
+          <th>Email</th>
+          <th>职位</th>
+          <th>简历摘要</th>
+          <th>Notion 页面</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
 
   <script>
-    document.getElementById('loadButton').addEventListener('click', fetchData);
+    async function loadResumes() {
+      const loading = document.getElementById('loading');
+      const table = document.getElementById('resumeTable');
+      const tbody = table.querySelector('tbody');
 
-    async function fetchData() {
-      const status = document.getElementById('status');
-      const table = document.getElementById('dataTable');
-      const tbody = document.getElementById('tableBody');
-      const button = document.getElementById('loadButton');
-
-      // 显示加载状态
-      status.textContent = '正在加载，请稍候...';
-      status.style.display = 'block';
-      status.style.color = '#000';
+      loading.style.display = 'block';
       table.style.display = 'none';
-      button.disabled = true;
+      tbody.innerHTML = '';
 
       try {
-        const res = await fetch('https://my-netlify-hof.netlify.app/.netlify/functions/notion-query', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            email: '' // 👈 全量查询
-          })
-        });
-
+        const res = await fetch('https://你的Netlify地址/.netlify/functions/notion-query-all');
         const data = await res.json();
 
-        if (!res.ok) {
-          status.textContent = '❌ 加载失败: ' + (data.error || '未知错误');
-          status.style.color = 'red';
-          button.disabled = false;
-          return;
-        }
-
         if (!data.results || data.results.length === 0) {
-          status.textContent = '暂无数据';
-          status.style.color = '#555';
-          button.disabled = false;
+          loading.innerText = '暂无数据';
           return;
         }
-
-        // 清空旧数据
-        tbody.innerHTML = '';
 
         data.results.forEach(item => {
           const tr = document.createElement('tr');
-          const email = item.email || '';
-          const jobTitle = item.jobTitle || '';
-          const resume = item.resume || '';
-          const timestamp = item.timestamp
-            ? new Date(item.timestamp).toLocaleString()
-            : '';
-
           tr.innerHTML = `
-            <td>${email}</td>
-            <td>${jobTitle}</td>
-            <td>${resume}</td>
-            <td>${timestamp}</td>
+            <td>${item.email}</td>
+            <td>${item.jobTitle}</td>
+            <td>${item.resume}</td>
+            <td><a href="${item.notionUrl}" target="_blank">查看</a></td>
           `;
-
           tbody.appendChild(tr);
         });
 
-        // 显示表格
-        status.style.display = 'none';
         table.style.display = 'table';
-        button.disabled = false;
-
+        loading.style.display = 'none';
       } catch (err) {
-        status.textContent = '❌ 网络异常，请稍后再试';
-        status.style.color = 'red';
-        button.disabled = false;
-        console.error(err);
+        loading.innerText = '加载失败：' + err.message;
       }
     }
   </script>
-
 </body>
+
+
+
 
 
 </html> 
