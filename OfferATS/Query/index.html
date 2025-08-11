@@ -186,7 +186,7 @@ a:hover {
       tbody.innerHTML = '';
 
       try {
-        const res = await fetch('https://你的Netlify地址/.netlify/functions/notion-query-all');
+        const res = await fetch('https://my-netlify-hof.netlify.app/.netlify/functions/notion-query-all');
         const data = await res.json();
 
         if (!data.results || data.results.length === 0) {
